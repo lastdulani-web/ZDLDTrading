@@ -1,0 +1,159 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#505b6a"><title>ZD&amp;LD Trading</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1d232b;--mute:#5f6a78;--gold:#a57c00;--btn:#505b6a;--onbtn:#fff;--bad:#b3402a;--line:#dde1e6}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#14181d;--card:#1d242c;--ink:#e9ecef;--mute:#9aa5b1;--gold:#d9ab1c;--btn:#d9ab1c;--onbtn:#1a1500;--bad:#ff8a70;--line:#2d3641}}
+:root[data-theme=dark]{--bg:#14181d;--card:#1d242c;--ink:#e9ecef;--mute:#9aa5b1;--gold:#d9ab1c;--btn:#d9ab1c;--onbtn:#1a1500;--bad:#ff8a70;--line:#2d3641}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,sans-serif;padding-bottom:76px}
+header{background:#505b6a;color:#fff;padding:12px 16px 20px;position:relative;display:flex;gap:10px;align-items:center}
+header:after{content:"";position:absolute;inset:auto 0 0;height:9px;background:repeating-linear-gradient(90deg,#d9ab1c 0 2px,transparent 2px 10px)}
+.lg{background:#fff;border-radius:50%;width:40px;height:40px;display:grid;place-items:center}.lg img{width:36px}
+h1{margin:0;font-size:20px;flex:1}#st{font-size:12px;opacity:.9}
+main{max-width:560px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+label{display:block;font-size:13px;color:var(--mute);margin:8px 0}
+input,select,textarea{display:block;width:100%;font:inherit;padding:10px;margin-top:4px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 12px;border-radius:8px}
+button.big{width:100%;margin-top:8px;padding:13px;background:var(--btn);border-color:var(--btn);color:var(--onbtn);font-weight:600}
+.li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+small{display:block;color:var(--mute);font-size:13px}.low{color:var(--bad);font-weight:600}
+h3{margin:18px 0 4px;font-size:15px}.empty{color:var(--mute);font-size:14px}
+.n{font-size:40px;font-weight:700;color:var(--gold)}.neg{color:var(--bad)}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px}.g div{border-top:2px solid var(--gold);padding-top:6px}.g b{font-size:18px}
+.seg{display:flex;gap:6px;margin-bottom:14px}.seg button{flex:1;padding:8px 4px;font-size:14px}
+.seg .on{background:var(--btn);color:var(--onbtn);border-color:var(--btn)}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0)}
+nav button{flex:1;border:0;border-radius:0;padding:16px 0;background:none;font-weight:600}
+nav .on{color:var(--btn);box-shadow:inset 0 3px var(--gold)}
+#t{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;transition:.2s;pointer-events:none}#t.s{opacity:1}
+#sp{position:fixed;inset:0;background:#fff;display:grid;place-items:center;z-index:9;transition:opacity .4s}#sp.h{opacity:0}#sp img{width:min(70vw,320px)}
+#rep{display:none}
+@media print{body>*:not(#rep){display:none!important}#rep{display:block!important}body{background:#fff;color:#000;padding:0}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px;text-align:left}th{background:#505b6a;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style></head><body>
+<div id="sp"><img src="logo.png" alt="ZD&amp;LD Trading"></div>
+<header><span class="lg"><img src="logo.png" alt=""></span><h1>ZD&amp;LD Trading</h1><span id="st"></span></header>
+<main id="main"></main><nav id="nav"></nav><div id="t"></div><div id="rep"></div>
+<script>
+const $=s=>document.querySelector(s),jp=s=>{try{return JSON.parse(s)||{}}catch(x){return{}}};
+let S=JSON.parse(localStorage.zdld||'{"ev":[],"pend":[],"user":"","url":"","th":""}'),tab=S.user?'sell':'setup',rg='7';
+const save=()=>localStorage.zdld=JSON.stringify(S);
+const R=n=>'R'+(+n).toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+const setSt=t=>$('#st').textContent=t,td=()=>new Date().toISOString().slice(0,10);
+function toast(m){const t=$('#t');t.textContent=m;t.className='s';setTimeout(()=>t.className='',2200)}
+const DL={type:'T-shirt,Hoodie,Dress,Jeans,Shirt,Cap',size:'XS,S,M,L,XL,XXL,One size',colour:'Black,White,Navy,Red,Blue,Green,Grey',cat:'Loan,SARS tax,Courier,Supplier,Other'};
+const LN={type:'Item types',size:'Item sizes',colour:'Colours',cat:'Money owed categories'};
+const RN={t:'Today','7':'Last 7 days',m:'This month',a:'All time'};
+function lists(){const o={};for(const k in DL)o[k]=DL[k].split(',');
+ S.ev.filter(e=>e.kind=='list').sort((a,b)=>a.ts-b.ts).forEach(e=>{const a=jp(e.meta);if(Array.isArray(a))o[e.item]=a});return o}
+function calc(){const it={};
+ S.ev.slice().sort((a,b)=>a.ts-b.ts).forEach(e=>{const k=e.item,q=+e.qty||0;
+  if(e.kind=='item')it[k]={...jp(e.meta),name:k,cost:+e.cost,price:+e.price,qty:(it[k]?it[k].qty:0)+q};
+  else if(it[k])it[k].qty+=e.kind=='restock'?q:e.kind=='sale'?-q:0});return it}
+function owed(){const o={};
+ S.ev.slice().sort((a,b)=>a.ts-b.ts).forEach(e=>{
+  if(e.kind=='owe')o[e.id]={id:e.id,party:e.item,amt:+e.cost,paid:0,...jp(e.meta)};
+  else if(e.kind=='pay'&&o[e.item])o[e.item].paid+=+e.price});return Object.values(o)}
+const open=()=>owed().filter(o=>o.amt-o.paid>.005);
+const soon=()=>{const l=new Date(Date.now()+6048e5).toISOString().slice(0,10);return open().filter(o=>o.due&&o.due<=l)};
+
+function add(kind,item,qty,cost,price,meta){
+ const e={id:'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),kind,user:S.user,item,qty,cost,price,meta:meta||''};
+ S.ev.push(e);S.pend.push(e.id);save();render();sync()}
+
+async function sync(){
+ if(!S.url){setSt('This device only');return}
+ if(!navigator.onLine){setSt('Offline, saved here');return}
+ setSt('Syncing…');
+ try{
+  const p=S.ev.filter(e=>S.pend.includes(e.id));
+  if(p.length)await fetch(S.url,{method:'POST',body:JSON.stringify(p)});
+  const r=await(await fetch(S.url)).json(),have=new Set(S.ev.map(e=>e.id));
+  r.forEach(e=>{if(!have.has(e.id))S.ev.push(e)});
+  S.pend=S.pend.filter(i=>!p.some(e=>e.id==i));save();setSt('Synced');
+  if(!document.activeElement.matches('input,select,textarea'))render();
+ }catch(x){setSt('Offline, saved here')}}
+
+function render(){
+ document.documentElement.dataset.theme=S.th||'';
+ const n=soon().length,tabs={sell:'Sell',stock:'Stock',profit:'Profit',owed:'Owed'+(n?` (${n})`:''),setup:'Setup'};
+ $('#nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';render()">${v}</button>`).join('');
+ $('#main').innerHTML=V[tab](calc())}
+
+const opts=a=>'<option value="">None</option>'+a.map(x=>`<option>${esc(x)}</option>`).join('');
+const V={
+sell:it=>{const l=Object.values(it),n=soon().length;
+ const ban=n?`<p class="low" onclick="tab='owed';render()">${n} payment${n>1?'s':''} due soon or overdue. Tap to see.</p>`:'';
+ if(!l.length)return ban+'<p class="empty">No items yet. Add your first item under Stock.</p>';
+ const sales=S.ev.filter(e=>e.kind=='sale').sort((a,b)=>b.ts-a.ts).slice(0,8);
+ return ban+`<div class="card"><label>Item<select id="si" onchange="$('#sp2').value=calc()[this.value].price">${l.map(i=>`<option value="${esc(i.name)}">${esc(i.name)} (${i.qty} left)</option>`).join('')}</select></label>
+ <div class="row"><label>Qty<input id="sq" type="number" min="1" value="1"></label><label>Price each<input id="sp2" type="number" step="0.01" value="${l[0].price}"></label></div>
+ <button class="big" onclick="sell()">Record sale</button></div><h3>Recent sales</h3>
+ ${sales.map(e=>`<div class="li"><span>${e.qty} × ${esc(e.item)}<small>${new Date(+e.ts).toLocaleString('en-ZA',{dateStyle:'short',timeStyle:'short'})}${e.user?' by '+esc(e.user):''}</small></span><b>${R(e.qty*e.price)}</b></div>`).join('')||'<p class="empty">Nothing sold yet.</p>'}`},
+stock:it=>{const L=lists(),l=Object.values(it).sort((a,b)=>a.name.localeCompare(b.name));
+ return`<div class="card"><b>Add or update an item</b><label>Name (optional)<input id="an"></label>
+ <label>Item type<select id="at">${opts(L.type)}</select></label>
+ <div class="row"><label>Item size<select id="as">${opts(L.size)}</select></label><label>Colour<select id="ak">${opts(L.colour)}</select></label></div>
+ <div class="row"><label>Cost<input id="ac" type="number" step="0.01"></label><label>Selling price<input id="ap" type="number" step="0.01"></label><label>Qty in<input id="aq" type="number" value="0"></label></div>
+ <button class="big" onclick="addItem()">Save item</button><small>The same name, type, size and colour updates prices and adds to stock.</small></div>
+ ${l.map(i=>`<div class="li"><span>${esc(i.name)}<small class="${i.qty<=2?'low':''}">${i.qty} in stock, cost ${R(i.cost)}, sells ${R(i.price)}</small></span><button data-n="${esc(i.name)}" onclick="restock(this.dataset.n)">Restock</button></div>`).join('')}`},
+profit:it=>{
+ let rev=0,cost=0,u=0,by={};const f=fromT();
+ S.ev.filter(e=>e.kind=='sale'&&+e.ts>=f).forEach(e=>{const r=e.qty*e.price,c=e.qty*e.cost;rev+=r;cost+=c;u+=+e.qty;by[e.item]=(by[e.item]||0)+r-c});
+ const pr=rev-cost,val=Object.values(it).reduce((a,i)=>a+Math.max(i.qty,0)*i.cost,0);
+ return`<div class="seg">${Object.entries(RN).map(([k,v])=>`<button class="${k==rg?'on':''}" onclick="rg='${k}';render()">${v}</button>`).join('')}</div>
+ <div class="card"><small>Profit</small><div class="n ${pr<0?'neg':''}">${R(pr)}</div><small>${rev?Math.round(pr/rev*100)+'% margin':'No sales in this period'}</small></div>
+ <div class="g"><div><small>Sales</small><b>${R(rev)}</b></div><div><small>Cost of goods</small><b>${R(cost)}</b></div><div><small>Units sold</small><b>${u}</b></div><div><small>Stock value at cost</small><b>${R(val)}</b></div></div>
+ <div class="row"><button class="big" onclick="xls()">Export Excel</button><button class="big" onclick="pdf()">Export PDF</button></div>
+ <h3>Profit by item</h3>${Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="li"><span>${esc(k)}</span><b>${R(v)}</b></div>`).join('')||'<p class="empty">Nothing to show yet.</p>'}`},
+owed:()=>{const L=lists(),o=open().sort((a,b)=>(a.due||'9')<(b.due||'9')?-1:1),tot=o.reduce((a,x)=>a+x.amt-x.paid,0),t=td(),w=soon().map(x=>x.id);
+ return`<div class="card"><small>Total you owe</small><div class="n">${R(tot)}</div></div>
+ <div class="card"><b>Add something you owe</b><label>Who do you owe?<input id="op"></label>
+ <div class="row"><label>Category<select id="oc">${L.cat.map(x=>`<option>${esc(x)}</option>`).join('')}</select></label><label>Amount<input id="oa" type="number" step="0.01"></label></div>
+ <label>Due date<input id="od" type="date"></label><button class="big" onclick="addOwe()">Save</button></div>
+ ${o.map(x=>`<div class="li"><span>${esc(x.party)}<small>${esc(x.cat||'')}${x.due?', due '+x.due:''}${x.paid?', paid '+R(x.paid):''}</small>${x.due&&x.due<t?'<small class="low">Overdue</small>':w.includes(x.id)?'<small class="low">Due within 7 days</small>':''}</span><span style="text-align:right"><b>${R(x.amt-x.paid)}</b><br><button data-i="${x.id}" onclick="pay(this.dataset.i)">Pay</button></span></div>`).join('')||'<p class="empty">Nothing owed right now.</p>'}`},
+setup:()=>{const L=lists();return`<div class="card"><label>Your name<input id="un" value="${esc(S.user)}" placeholder="Shows next to each sale you record"></label>
+ <label>Google Sheet link (web app URL)<input id="ur" value="${esc(S.url)}" placeholder="https://script.google.com/macros/s/…/exec"></label>
+ <label>Appearance<select id="ut"><option value="">Match my device</option><option value="light"${S.th=='light'?' selected':''}>Light</option><option value="dark"${S.th=='dark'?' selected':''}>Dark</option></select></label>
+ <button class="big" onclick="cfg()">Save and sync</button></div>
+ <div class="card"><b>Dropdown lists</b><small>One entry per line. Changes sync to every device.</small>${Object.keys(DL).map(k=>`<label>${LN[k]}<textarea id="l_${k}" rows="4">${esc(L[k].join('\n'))}</textarea></label>`).join('')}<button class="big" onclick="saveLists()">Save lists</button></div>
+ <p class="empty">Leave the link empty to use the app on this device only.</p><p class="empty">ZD&amp;LD Trading app by Last Dulani</p>`}};
+
+function sell(){const it=calc()[$('#si').value],q=+$('#sq').value,p=+$('#sp2').value;
+ if(!(q>0)||!(p>=0))return toast('Enter a quantity and price');
+ if(q>it.qty)return toast('Only '+it.qty+' in stock');
+ add('sale',it.name,q,it.cost,p);toast('Sale recorded')}
+function addItem(){const n=$('#an').value.trim(),t=$('#at').value,s=$('#as').value,c=$('#ak').value,co=+$('#ac').value,p=+$('#ap').value,q=+$('#aq').value||0;
+ if(!(n||t)||!(p>0)||!(co>=0))return toast('Enter a name or type, a cost and a selling price');
+ add('item',[n,t,s,c].filter(Boolean).join(' / '),q,co,p,JSON.stringify({n,t,s,c}));toast('Item saved')}
+function restock(n){const q=+prompt('How many '+n+' came in?');if(q>0){add('restock',n,q,'','');toast('Stock updated')}}
+function addOwe(){const p=$('#op').value.trim(),a=+$('#oa').value;
+ if(!p||!(a>0))return toast('Enter who you owe and the amount');
+ add('owe',p,'',a,'',JSON.stringify({cat:$('#oc').value,due:$('#od').value}));toast('Saved')}
+function pay(id){const o=owed().find(x=>x.id==id),a=+prompt('Amount paid to '+o.party+'?',(o.amt-o.paid).toFixed(2));
+ if(a>0){add('pay',id,'','',a);toast('Payment recorded')}}
+function saveLists(){const L=lists();
+ for(const k in DL){const a=$('#l_'+k).value.split('\n').map(x=>x.trim()).filter(Boolean);
+  if(a.join('|')!=L[k].join('|'))add('list',k,'','','',JSON.stringify(a))}
+ toast('Lists saved')}
+function cfg(){S.user=$('#un').value.trim();S.url=$('#ur').value.trim();S.th=$('#ut').value;if(!S.user)return toast('Enter your name');save();tab='sell';render();sync()}
+
+function fromT(){const d=new Date();d.setHours(0,0,0,0);return{t:d.getTime(),'7':Date.now()-6048e5,m:new Date(d.getFullYear(),d.getMonth(),1).getTime(),a:0}[rg]}
+function data(){const it=calc(),f=fromT(),sa=S.ev.filter(e=>e.kind=='sale'&&+e.ts>=f).sort((a,b)=>a.ts-b.ts);
+ return{
+ sales:[['Date','By','Item','Type','Size','Colour','Qty','Price each','Cost each','Profit'],...sa.map(e=>{const i=it[e.item]||{};return[new Date(+e.ts).toLocaleDateString('en-ZA'),e.user||'',i.n||e.item,i.t||'',i.s||'',i.c||'',+e.qty,+e.price,+e.cost,(e.price-e.cost)*e.qty]})],
+ stock:[['Item','Type','Size','Colour','In stock','Cost','Price'],...Object.values(it).map(i=>[i.n||i.name,i.t||'',i.s||'',i.c||'',i.qty,i.cost,i.price])],
+ ow:[['Owed to','Category','Amount','Paid','Outstanding','Due'],...owed().map(o=>[o.party,o.cat||'',o.amt,o.paid,o.amt-o.paid,o.due||''])]}}
+function xls(){const d=data(),c=v=>typeof v=='number'?`<Cell><Data ss:Type="Number">${v}</Data></Cell>`:`<Cell><Data ss:Type="String">${esc(v)}</Data></Cell>`,
+ w=(n,r)=>`<Worksheet ss:Name="${n}"><Table>${r.map(x=>`<Row>${x.map(c).join('')}</Row>`).join('')}</Table></Worksheet>`,
+ b=new Blob([`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">${w('Sales',d.sales)+w('Stock',d.stock)+w('Owed',d.ow)}</Workbook>`],{type:'application/vnd.ms-excel'}),
+ a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='ZDLD-report.xls';a.click()}
+function pdf(){const d=data(),t=r=>`<table>${r.map((x,i)=>`<tr>${x.map(c=>i?`<td>${esc(typeof c=='number'&&!Number.isInteger(c)?c.toFixed(2):c)}</td>`:`<th>${esc(c)}</th>`).join('')}</tr>`).join('')}</table>`,
+ s=d.sales.slice(1),rev=s.reduce((a,r)=>a+r[6]*r[7],0),pr=s.reduce((a,r)=>a+r[9],0);
+ $('#rep').innerHTML=`<h2>ZD&amp;LD Trading report</h2><p>${RN[rg]}, printed ${new Date().toLocaleDateString('en-ZA')}. Sales ${R(rev)}, profit ${R(pr)}.</p><h3>Sales</h3>${t(d.sales)}<h3>Stock</h3>${t(d.stock)}<h3>Money owed</h3>${t(d.ow)}`;print()}
+
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+addEventListener('online',sync);setInterval(sync,30000);render();sync();
+setTimeout(()=>$('#sp').classList.add('h'),1500);setTimeout(()=>$('#sp').remove(),1900);
+</script></body></html>
