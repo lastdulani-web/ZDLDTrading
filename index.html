@@ -102,7 +102,7 @@ sell:it=>{const l=Object.values(it),n=soon().length,nm=k=>(it[k]||{}).name||k;
  const ban=n?`<p class="low" onclick="tab='owed';render()">${n} payment${n>1?'s':''} due soon or overdue. Tap to see.</p>`:'';
  const es=se&&sales().find(x=>x.id==se),vs=iv&&sales().find(x=>x.id==iv);
  const ef=es?`<div class="card"><b>Edit sale</b><small>${esc(nm(es.item))}</small><div class="row"><label>Qty<input id="eq" type="number" min="1" value="${es.qty}"></label><label>Price each<input id="ep" type="number" step="0.01" value="${es.price}"></label></div><button class="big" onclick="saveSale()">Update sale</button><button class="big" ${CB} onclick="se=null;render()">Cancel</button></div>`:'';
- const vf=vs?`<div class="card"><b>Invoice ${invNo(vs.id)}</b><small>${vs.qty} × ${esc(nm(vs.item))}, ${R(vs.qty*vs.price)}</small><label>Client name<input id="icn" value="${esc(vs.client||'')}"></label><label>Client contact or address<input id="icc" value="${esc(vs.contact||'')}"></label><button class="big" onclick="mkInv()">Create invoice (print or save as PDF)</button><button class="big" ${CB} onclick="iv=null;render()">Cancel</button></div>`:'';
+ const vf=vs?`<div class="card"><b>Invoice ${invNo(vs.id)}</b><small>${vs.qty} × ${esc(nm(vs.item))}, ${R(vs.qty*vs.price)}</small><label>Client name<input id="icn" value="${esc(vs.client||'')}"></label><label>Client contact or address<input id="icc" value="${esc(vs.contact||'')}"></label><button class="big" onclick="mkInv()">Create invoice PDF</button><button class="big" ${CB} onclick="iv=null;render()">Cancel</button></div>`:'';
  if(!l.length)return ban+'<p class="empty">No items yet. Add your first item under Stock.</p>';
  const rs=sales().sort((a,b)=>b.ts-a.ts).slice(0,15);
  return ban+ef+vf+`<div class="card"><label>Item<select id="si" onchange="$('#sp2').value=calc()[this.value].price">${l.map(i=>`<option value="${esc(i.key)}">${esc(i.name)} (${i.qty} left)</option>`).join('')}</select></label>
@@ -154,10 +154,10 @@ function saveSale(){const s=sales().find(x=>x.id==se),it=calc()[s.item],q=+$('#e
  se=null;add('sedit',s.id,q,'',p,'');toast('Sale updated')}
 function delSale(i){if(confirm('Delete this sale? The stock goes back.')){if(se==i)se=null;if(iv==i)iv=null;add('sdel',i,'','','');toast('Sale deleted')}}
 function invNo(id){const a=S.ev.filter(e=>e.kind=='sale').sort((x,y)=>x.ts-y.ts);return 'INV-'+String(a.findIndex(e=>e.id==id)+1).padStart(4,'0')}
-function mkInv(){const s=sales().find(x=>x.id==iv),it=calc()[s.item]||{},c=$('#icn').value.trim(),ct=$('#icc').value.trim(),L=lists(),no=invNo(s.id),tot=R(s.qty*s.price);
- add('sedit',s.id,s.qty,'',s.price,JSON.stringify({client:c,contact:ct}));
- $('#rep').innerHTML=`<img src="logo-gold.png" width="80" alt=""><h2>ZD and LD Trading (PTY) LTD</h2><p>${L.inv.filter(Boolean).map(esc).join('<br>')}</p><h3>Invoice ${no}</h3><p>Date: ${new Date(+s.ts).toLocaleDateString('en-ZA')}</p><p><b>Bill to:</b> ${esc(c)||'-'}<br>${esc(ct)}</p><table><tr><th>Item</th><th>Qty</th><th>Price each</th><th>Total</th></tr><tr><td>${esc(it.name||s.item)}</td><td>${s.qty}</td><td>${R(s.price)}</td><td>${tot}</td></tr></table><h3>Total due: ${tot}</h3>`;
- iv=null;render();print()}
+function mkInv(){const s=sales().find(x=>x.id==iv),it=calc()[s.item]||{},c=$('#icn').value.trim(),ct=$('#icc').value.trim(),no=invNo(s.id);
+ const u=invPdf({no,date:new Date(+s.ts).toLocaleDateString('en-ZA'),client:c,contact:ct,inv:lists().inv.filter(Boolean),item:(it.name||s.item).slice(0,48),qty:String(s.qty),price:R(s.price),total:R(s.qty*s.price)},LG);
+ add('sedit',s.id,s.qty,'',s.price,JSON.stringify({client:c,contact:ct}));iv=null;render();
+ outPdf(u,(no+(c?' '+c:'')).replace(/[^\w .-]/g,'')+'.pdf')}
 function restock(n){const i=calc()[n],q=+prompt('How many '+i.name+' came in?');if(q>0){add('restock',n,q,'','');toast('Stock updated')}}
 function addOwe(){const p=$('#op').value.trim(),a=+$('#oa').value,m=JSON.stringify({cat:$('#oc').value,due:$('#od').value});
  if(!p||!(a>0))return toast('Enter who you owe and the amount');
@@ -186,6 +186,29 @@ function pdf(){const d=data(),t=r=>`<table>${r.map((x,i)=>`<tr>${x.map(c=>i?`<td
  s=d.sales.slice(1),rev=s.reduce((a,r)=>a+r[6]*r[7],0),pr=s.reduce((a,r)=>a+r[9],0);
  $('#rep').innerHTML=`<h2>ZD&amp;LD Trading report</h2><p>${RN[rg]}, printed ${new Date().toLocaleDateString('en-ZA')}. Sales ${R(rev)}, profit ${R(pr)}.</p><h3>Sales</h3>${t(d.sales)}<h3>Stock</h3>${t(d.stock)}<h3>Money owed</h3>${t(d.ow)}`;print()}
 
+/*PDF*/
+const T=(s,x,y,z,b)=>`BT /F${b?2:1} ${z} Tf ${x} ${y} Td (${String(s).replace(/[\u00a0\u202f]/g,' ').replace(/[^\x20-\x7e\xa0-\xff]/g,'?').replace(/[\\()]/g,'\\$&')}) Tj ET\n`,Ln=(y,a=40,b=555)=>`0.5 w ${a} ${y} m ${b} ${y} l S\n`;
+function pdfDoc(c,img){const o=['<</Type/Catalog/Pages 2 0 R>>','<</Type/Pages/Kids[3 0 R]/Count 1>>','<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 5 0 R/F2 6 0 R>>'+(img?'/XObject<</Im1 7 0 R>>':'')+'>>/Contents 4 0 R>>',`<</Length ${c.length}>>\nstream\n${c}\nendstream`,'<</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>','<</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold/Encoding/WinAnsiEncoding>>'];
+ if(img)o.push(`<</Type/XObject/Subtype/Image/Width 160/Height 160/ColorSpace/DeviceRGB/BitsPerComponent 8/Length ${img.length}>>\nstream\n${img}\nendstream`);
+ let out='%PDF-1.4\n',off=[];o.forEach((v,i)=>{off.push(out.length);out+=`${i+1} 0 obj\n${v}\nendobj\n`});
+ const x=out.length;out+=`xref\n0 ${o.length+1}\n0000000000 65535 f \n`+off.map(v=>String(v).padStart(10,'0')+' 00000 n \n').join('')+`trailer\n<</Size ${o.length+1}/Root 1 0 R>>\nstartxref\n${x}\n%%EOF`;
+ const u=new Uint8Array(out.length);for(let i=0;i<out.length;i++)u[i]=out.charCodeAt(i)&255;return u}
+function invPdf(d,img){let c=img?'q 70 0 0 70 40 752 cm /Im1 Do Q\n':'',y=800;
+ c+=T('ZD and LD Trading (PTY) LTD',125,y,16,1);
+ d.inv.forEach(l=>{y-=13;c+=T(l,125,y,9)});
+ y=Math.min(y-30,715);
+ c+=T('INVOICE '+d.no,40,y,14,1)+T('Date: '+d.date,40,y-18,10);
+ y-=48;c+=T('Bill to',40,y,10,1);y-=14;c+=T(d.client||'-',40,y,11);
+ d.contact.split('\n').forEach(l=>{if(l.trim()){y-=13;c+=T(l,40,y,10)}});
+ y-=34;c+=T('Item',40,y,10,1)+T('Qty',340,y,10,1)+T('Price each',400,y,10,1)+T('Total',490,y,10,1)+Ln(y-6);
+ y-=22;c+=T(d.item,40,y,10)+T(d.qty,340,y,10)+T(d.price,400,y,10)+T(d.total,490,y,10)+Ln(y-8);
+ y-=36;c+=T('Total due: '+d.total,370,y,13,1);
+ return pdfDoc(c,img)}
+async function outPdf(u,name){const f=new File([u],name,{type:'application/pdf'});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:name});return}catch(e){if(e.name=='AbortError')return}}
+ const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=name;a.click()}
+let LG=null;(async()=>{try{const im=new Image();im.src='logo-gold.png';await im.decode();const c=document.createElement('canvas');c.width=c.height=160;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,160,160);x.drawImage(im,0,0,160,160);const d=x.getImageData(0,0,160,160).data;let b='';for(let i=0;i<d.length;i+=4)b+=String.fromCharCode(d[i],d[i+1],d[i+2]);LG=b}catch(e){}})();
+/*END*/
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 addEventListener('online',sync);setInterval(sync,30000);render();sync();
 setTimeout(()=>$('#sp').classList.add('h'),1500);setTimeout(()=>$('#sp').remove(),1900);
