@@ -1,14 +1,14 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#505b6a"><title>ZD&amp;LD Trading</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#505b6a"><link rel="manifest" href="manifest.json"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="ZD&amp;LD"><title>ZD&amp;LD Trading</title>
 <style>
 :root{--bg:#f4f5f7;--card:#fff;--ink:#1d232b;--mute:#5f6a78;--gold:#a57c00;--btn:#505b6a;--onbtn:#fff;--bad:#b3402a;--line:#dde1e6}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#14181d;--card:#1d242c;--ink:#e9ecef;--mute:#9aa5b1;--gold:#d9ab1c;--btn:#d9ab1c;--onbtn:#1a1500;--bad:#ff8a70;--line:#2d3641}}
 :root[data-theme=dark]{--bg:#14181d;--card:#1d242c;--ink:#e9ecef;--mute:#9aa5b1;--gold:#d9ab1c;--btn:#d9ab1c;--onbtn:#1a1500;--bad:#ff8a70;--line:#2d3641}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,sans-serif;padding-bottom:76px}
-header{background:#505b6a;color:#fff;padding:12px 16px 20px;position:relative;display:flex;gap:10px;align-items:center}
-header:after{content:"";position:absolute;inset:auto 0 0;height:9px;background:repeating-linear-gradient(90deg,#d9ab1c 0 2px,transparent 2px 10px)}
-.lg{background:#fff;border-radius:50%;width:40px;height:40px;display:grid;place-items:center}.lg img{width:36px}
-h1{margin:0;font-size:20px;flex:1}#st{font-size:12px;opacity:.9}#gr{background:none;border:0;color:#fff;font-size:22px;padding:4px 6px}
+header{background:#505b6a;color:#fff;padding:12px 16px 16px;position:relative;display:flex;gap:10px;align-items:center}
+header:after{content:"";position:absolute;inset:auto 0 0;height:4px;background:#a57c00}
+.lg{background:#fff;border-radius:10px;width:42px;height:42px;display:grid;place-items:center}.lg img{width:36px}
+h1{margin:0;font-size:20px;flex:1}h1 span{color:#e0b13a}#st{font-size:11px;line-height:1.1;max-width:72px;text-align:right;opacity:.9}.hb{background:none;border:0;color:#fff;font-size:22px;padding:4px 6px}
 main{max-width:560px;margin:0 auto;padding:14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
 label{display:block;font-size:13px;color:var(--mute);margin:8px 0}
@@ -27,22 +27,23 @@ nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);b
 nav button{flex:1;border:0;border-radius:0;padding:16px 0;background:none;font-weight:600}
 nav .on{color:var(--btn);box-shadow:inset 0 3px var(--gold)}
 #t{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;transition:.2s;pointer-events:none}#t.s{opacity:1}
-#sp{position:fixed;inset:0;background:#fff;display:grid;place-items:center;z-index:9;transition:opacity .4s}#sp.h{opacity:0}#sp img{width:min(70vw,320px)}
-#rep{display:none}
+#sp{position:fixed;inset:0;background:#a57c00;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:9;transition:opacity .4s}#sp.h{opacity:0}#sp img{width:min(35vw,160px)}#sp p{margin:0;color:#fff;font-size:12px;letter-spacing:.4px}
+.oe{padding:12px 0;border-bottom:1px solid var(--line)}.oe .r1,.oe .r2{display:flex;justify-content:space-between;align-items:center;gap:10px}.oe .r2{margin-top:8px}.ic{border:0;background:none;padding:6px;color:var(--mute);display:inline-grid}.ic.d{color:var(--bad)}.ex{display:flex;gap:8px;justify-content:flex-end;margin:8px 0}button.sm{padding:6px 12px;font-size:13px;font-weight:600;background:var(--btn);border-color:var(--btn);color:var(--onbtn)}#rep{display:none}
 @media print{body>*:not(#rep){display:none!important}#rep{display:block!important}body{background:#fff;color:#000;padding:0}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px;text-align:left}th{background:#505b6a;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style></head><body>
-<div id="sp"><img src="logo.png" alt="ZD&amp;LD Trading"></div>
-<header><span class="lg"><img src="logo.png" alt=""></span><h1>ZD&amp;LD Trading</h1><span id="st"></span><button id="gr" onclick="tab='setup';render()" aria-label="Settings">&#9881;</button></header>
+<div id="sp"><img src="logo-white.png" alt="ZD&amp;LD Trading"><p>developed by Last Dulani</p></div>
+<header><span class="lg"><img src="logo-gold.png" alt=""></span><h1>ZD&amp;LD <span>Trading</span></h1><span id="st"></span><button id="th" class="hb" onclick="S.th=dk()?'light':'dark';save();render()"></button><button class="hb" onclick="tab='setup';render()" aria-label="Settings">&#9881;&#65038;</button></header>
 <main id="main"></main><nav id="nav"></nav><div id="t"></div><div id="rep"></div>
 <script>
 const $=s=>document.querySelector(s),jp=s=>{try{return JSON.parse(s)||{}}catch(x){return{}}};
-let S=JSON.parse(localStorage.zdld||'{"ev":[],"pend":[],"user":"","url":"","th":""}'),tab=S.user?'sell':'setup',rg='7',sc=false;
+let S=JSON.parse(localStorage.zdld||'{"ev":[],"pend":[],"user":"","url":"","th":""}'),tab=S.user?'sell':'setup',rg='7',sc=false,oe=null;
 const save=()=>localStorage.zdld=JSON.stringify(S);
 const R=n=>'R'+(+n).toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2});
 const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
 const setSt=t=>$('#st').textContent=t,td=()=>new Date().toISOString().slice(0,10);
 function toast(m){const t=$('#t');t.textContent=m;t.className='s';setTimeout(()=>t.className='',2200)}
 const DL={type:'T-shirt,Hoodie,Dress,Jeans,Shirt,Cap',size:'XS,S,M,L,XL,XXL,One size',colour:'Black,White,Navy,Red,Blue,Green,Grey',cat:'Loan,SARS tax,Courier,Supplier,Other'};
+const ic=d=>`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`,PEN=ic('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/>'),BIN=ic('<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/>'),dk=()=>S.th?S.th=='dark':matchMedia('(prefers-color-scheme:dark)').matches;
 const LN={type:'Item types',size:'Item sizes',colour:'Colours',cat:'Money owed categories'};
 const RN={t:'Today','7':'Last 7 days',m:'This month',a:'All time'};
 function lists(){const o={};for(const k in DL)o[k]=DL[k].split(',');
@@ -54,7 +55,9 @@ function calc(){const it={};
 function owed(){const o={};
  S.ev.slice().sort((a,b)=>a.ts-b.ts).forEach(e=>{
   if(e.kind=='owe')o[e.id]={id:e.id,party:e.item,amt:+e.cost,paid:0,...jp(e.meta)};
-  else if(e.kind=='pay'&&o[e.item])o[e.item].paid+=+e.price});return Object.values(o)}
+  else if(e.kind=='pay'&&o[e.item])o[e.item].paid+=+e.price;
+  else if(e.kind=='oedit'&&o[e.item])Object.assign(o[e.item],jp(e.meta),{amt:+e.cost});
+  else if(e.kind=='odel')delete o[e.item]});return Object.values(o)}
 const open=()=>owed().filter(o=>o.amt-o.paid>.005);
 const soon=()=>{const l=new Date(Date.now()+6048e5).toISOString().slice(0,10);return open().filter(o=>o.due&&o.due<=l)};
 
@@ -72,13 +75,13 @@ async function sync(){
   const r=await(await fetch(S.url)).json(),have=new Set(S.ev.map(e=>e.id));
   r.forEach(e=>{if(!have.has(e.id))S.ev.push(e)});
   S.pend=S.pend.filter(i=>!p.some(e=>e.id==i));save();setSt('Synced');
-  if(!document.activeElement.matches('input,select,textarea'))render();
+  if(!document.activeElement.matches('input,select,textarea')&&!oe)render();
  }catch(x){setSt('Offline, saved here')}}
 
 function render(){
- document.documentElement.dataset.theme=S.th||'';
+ document.documentElement.dataset.theme=S.th||'';$('#th').innerHTML=dk()?'&#9728;&#65038;':'&#9790;&#65038;';$('#th').setAttribute('aria-label',dk()?'Switch to light mode':'Switch to dark mode');
  const n=soon().length,tabs={sell:'Sell',stock:'Stock',profit:'Profit',owed:'Owed'+(n?` (${n})`:'')};if(!S.user)tabs.setup='Setup';
- $('#nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';render()">${v}</button>`).join('');
+ $('#nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';oe=null;render()">${v}</button>`).join('');
  $('#main').innerHTML=V[tab](calc())}
 
 const opts=a=>'<option value="">None</option>'+a.map(x=>`<option>${esc(x)}</option>`).join('');
@@ -105,14 +108,14 @@ profit:it=>{
  return`<div class="seg">${Object.entries(RN).map(([k,v])=>`<button class="${k==rg?'on':''}" onclick="rg='${k}';render()">${v}</button>`).join('')}</div>
  <div class="card"><small>Profit</small><div class="n ${pr<0?'neg':''}">${R(pr)}</div><small>${rev?Math.round(pr/rev*100)+'% margin':'No sales in this period'}</small></div>
  <div class="g"><div><small>Sales</small><b>${R(rev)}</b></div><div><small>Cost of goods</small><b>${R(cost)}</b></div><div><small>Units sold</small><b>${u}</b></div><div><small>Stock value at cost</small><b>${R(val)}</b></div></div>
- <div class="row"><button class="big" onclick="xls()">Export Excel</button><button class="big" onclick="pdf()">Export PDF</button></div>
+ <div class="ex"><button class="sm" onclick="xls()">Export Excel</button><button class="sm" onclick="pdf()">Export PDF</button></div>
  <h3>Profit by item</h3>${Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="li"><span>${esc(k)}</span><b>${R(v)}</b></div>`).join('')||'<p class="empty">Nothing to show yet.</p>'}`},
-owed:()=>{const L=lists(),o=open().sort((a,b)=>(a.due||'9')<(b.due||'9')?-1:1),tot=o.reduce((a,x)=>a+x.amt-x.paid,0),t=td(),w=soon().map(x=>x.id);
+owed:()=>{const L=lists(),o=open().sort((a,b)=>(a.due||'9')<(b.due||'9')?-1:1),tot=o.reduce((a,x)=>a+x.amt-x.paid,0),t=td(),w=soon().map(x=>x.id),ed=oe&&owed().find(x=>x.id==oe)||{},cats=ed.cat&&!L.cat.includes(ed.cat)?[...L.cat,ed.cat]:L.cat;
  return`<div class="card"><small>Total you owe</small><div class="n">${R(tot)}</div></div>
- <div class="card"><b>Add something you owe</b><label>Who do you owe?<input id="op"></label>
- <div class="row"><label>Category<select id="oc">${L.cat.map(x=>`<option>${esc(x)}</option>`).join('')}</select></label><label>Amount<input id="oa" type="number" step="0.01"></label></div>
- <label>Due date<input id="od" type="date"></label><button class="big" onclick="addOwe()">Save</button></div>
- ${o.map(x=>`<div class="li"><span>${esc(x.party)}<small>${esc(x.cat||'')}${x.due?', due '+x.due:''}${x.paid?', paid '+R(x.paid):''}</small>${x.due&&x.due<t?'<small class="low">Overdue</small>':w.includes(x.id)?'<small class="low">Due within 7 days</small>':''}</span><span style="text-align:right"><b>${R(x.amt-x.paid)}</b><br><button data-i="${x.id}" onclick="pay(this.dataset.i)">Pay</button></span></div>`).join('')||'<p class="empty">Nothing owed right now.</p>'}`},
+ <div class="card"><b>${ed.id?'Edit entry':'Add something you owe'}</b><label>Who do you owe?<input id="op" value="${esc(ed.party||'')}"></label>
+ <div class="row"><label>Category<select id="oc">${cats.map(x=>`<option${x==ed.cat?' selected':''}>${esc(x)}</option>`).join('')}</select></label><label>Amount<input id="oa" type="number" step="0.01" value="${ed.amt||''}"></label></div>
+ <label>Due date<input id="od" type="date" value="${ed.due||''}"></label><button class="big" onclick="addOwe()">${ed.id?'Update':'Save'}</button>${ed.id?'<button class="big" style="background:none;color:var(--ink);border-color:var(--line)" onclick="oe=null;render()">Cancel</button>':''}</div>
+ ${o.map(x=>`<div class="oe"><div class="r1"><span>${esc(x.party)}<small>${esc(x.cat||'')}${x.due?', due '+x.due:''}${x.paid?', paid '+R(x.paid):''}</small>${x.due&&x.due<t?'<small class="low">Overdue</small>':w.includes(x.id)?'<small class="low">Due within 7 days</small>':''}</span><b>${R(x.amt-x.paid)}</b></div><div class="r2"><button data-i="${x.id}" onclick="pay(this.dataset.i)">Pay</button><span><button class="ic" data-i="${x.id}" onclick="oe=this.dataset.i;render();scrollTo(0,0)" aria-label="Edit">${PEN}</button><button class="ic d" data-i="${x.id}" onclick="delOwe(this.dataset.i)" aria-label="Delete">${BIN}</button></span></div></div>`).join('')||'<p class="empty">Nothing owed right now.</p>'}`},
 setup:()=>{const L=lists();return(S.user&&!sc?`<button onclick="sc=true;render()">Change name or connection</button>`:`<div class="card"><label>Your name<input id="un" value="${esc(S.user)}" placeholder="Shows next to each sale you record"></label>
  <label>Google Sheet link (web app URL)<input id="ur" value="${esc(S.url)}" placeholder="https://script.google.com/macros/s/…/exec"></label>
  
@@ -128,9 +131,11 @@ function addItem(){const n=$('#an').value.trim(),t=$('#at').value,s=$('#as').val
  if(!(n||t)||!(p>0)||!(co>=0))return toast('Enter a name or type, a cost and a selling price');
  add('item',[n,t,s,c].filter(Boolean).join(' / '),q,co,p,JSON.stringify({n,t,s,c}));toast('Item saved')}
 function restock(n){const q=+prompt('How many '+n+' came in?');if(q>0){add('restock',n,q,'','');toast('Stock updated')}}
-function addOwe(){const p=$('#op').value.trim(),a=+$('#oa').value;
+function addOwe(){const p=$('#op').value.trim(),a=+$('#oa').value,m=JSON.stringify({cat:$('#oc').value,due:$('#od').value});
  if(!p||!(a>0))return toast('Enter who you owe and the amount');
- add('owe',p,'',a,'',JSON.stringify({cat:$('#oc').value,due:$('#od').value}));toast('Saved')}
+ if(oe){const i=oe;oe=null;add('oedit',i,'',a,'',JSON.stringify({...jp(m),party:p}));toast('Updated')}
+ else{add('owe',p,'',a,'',m);toast('Saved')}}
+function delOwe(i){if(confirm('Delete this entry?')){if(oe==i)oe=null;add('odel',i,'','','');toast('Deleted')}}
 function pay(id){const o=owed().find(x=>x.id==id),a=+prompt('Amount paid to '+o.party+'?',(o.amt-o.paid).toFixed(2));
  if(a>0){add('pay',id,'','',a);toast('Payment recorded')}}
 function saveLists(){const L=lists();
