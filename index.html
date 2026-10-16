@@ -36,7 +36,7 @@ html.boot{background:#a57c00}@keyframes fi{from{opacity:0}}#sp{position:fixed;in
 <main id="main"></main><nav id="nav"></nav><div id="t"></div><div id="rep"></div>
 <script>
 const $=s=>document.querySelector(s),jp=s=>{try{return JSON.parse(s)||{}}catch(x){return{}}};
-let S=JSON.parse(localStorage.zdld||'{"ev":[],"pend":[],"user":"","url":"","th":""}'),tab=S.user?'sell':'setup',rg='7',sc=false,oe=null,oa=false,fa=false,se=null,iv=null,ie=null,sf='a';
+let S=JSON.parse(localStorage.zdld||'{"ev":[],"pend":[],"user":"","url":"","th":""}'),tab=S.user?'sell':'setup',rg='7',sc=false,oe=null,oa=false,fa=false,se=null,iv=null,ie=null,sf='a',ra=false;
 const save=()=>localStorage.zdld=JSON.stringify(S);
 const R=n=>'R'+(+n).toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2});
 const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
@@ -91,13 +91,13 @@ async function sync(){
   const r=await(await fetch(S.url)).json(),have=new Set(S.ev.map(e=>e.id));
   r.forEach(e=>{if(!have.has(e.id))S.ev.push(e)});
   S.pend=S.pend.filter(i=>!p.some(e=>e.id==i));save();setSt('Synced');
-  if(!document.activeElement.matches('input,select,textarea')&&!oe&&!oa&&!fa&&!se&&!iv&&!ie)render();
+  if(!document.activeElement.matches('input,select,textarea')&&!oe&&!oa&&!fa&&!ra&&!se&&!iv&&!ie)render();
  }catch(x){setSt('Offline, saved here')}}
 
 function render(){
  document.documentElement.dataset.theme=S.th||'';$('#th').innerHTML=hi(dk()?SUN:MOON);$('#gr').innerHTML=hi(GEAR);$('#th').setAttribute('aria-label',dk()?'Switch to light mode':'Switch to dark mode');
  const n=soon().length,tabs={stock:'Stock',sell:'Sell',profit:'Profit',owed:'Owed'};if(!S.user)tabs.setup='Setup';
- $('#nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';oe=se=iv=ie=null;oa=fa=false;render()"><span class="ni">${ni(NI[k])}${k=='owed'&&n?`<i>${n}</i>`:''}</span>${v}</button>`).join('');
+ $('#nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';oe=se=iv=ie=null;oa=fa=ra=false;render()"><span class="ni">${ni(NI[k])}${k=='owed'&&n?`<i>${n}</i>`:''}</span>${v}</button>`).join('');
  $('#main').innerHTML=V[tab](calc())}
 
 const opts=(a,v)=>'<option value="">None</option>'+(v&&!a.includes(v)?[...a,v]:a).map(x=>`<option${x==v?' selected':''}>${esc(x)}</option>`).join('');
@@ -111,11 +111,11 @@ sell:it=>{const l=Object.values(it),n=soon().length,nm=k=>(it[k]||{}).name||k;
  const ow=all.reduce((a,x)=>a+x.bal,0),F={a:'All',d:'To deliver',p:'Unpaid',x:'Paid'},ok={a:()=>1,d:x=>x.st=='ord',p:x=>x.bal>.005,x:x=>x.st=='del'&&x.bal<=.005};
  const rs=all.filter(ok[sf]).sort((a,b)=>b.ts-a.ts).slice(0,30);
  return ban+ef+vf+`<div class="g"><div><small>To deliver</small><b>${all.filter(x=>x.st=='ord').length}</b></div><div><small>Customers owe you</small><b>${R(ow)}</b></div></div>
- <div class="card"><label>Item<select id="si" onchange="$('#sp2').value=calc()[this.value].price">${l.map(i=>`<option value="${esc(i.key)}">${esc(i.name)} (${i.qty} left)</option>`).join('')}</select></label>
+ ${ra?`<div class="card"><label>Item<select id="si" onchange="$('#sp2').value=calc()[this.value].price">${l.map(i=>`<option value="${esc(i.key)}">${esc(i.name)} (${i.qty} left)</option>`).join('')}</select></label>
  <div class="row"><label>Qty<input id="sq" type="number" min="1" value="1"></label><label>Price each<input id="sp2" type="number" step="0.01" value="${l[0].price}"></label></div>
  <label>Client name<input id="sc" placeholder="Needed for orders"></label>
  <label>Payment<select id="sm"><option value="o">Order: deliver, then they pay</option><option value="c">Paid now</option></select></label>
- <button class="big" onclick="sell()">Record sale</button></div>
+ <button class="big" onclick="sell()">Record sale</button><button class="big" ${CB} onclick="ra=false;render()">Cancel</button></div>`:`<button class="add" onclick="ra=true;render()"><b>+</b> Record sale</button>`}
  <div class="seg">${Object.entries(F).map(([k,v])=>`<button class="${k==sf?'on':''}" onclick="sf='${k}';render()">${v}</button>`).join('')}</div>
  ${rs.map(e=>`<div class="oe"><div class="r1"><span>${e.qty} × ${esc(nm(e.item))}<small>${new Date(+e.ts).toLocaleString('en-ZA',{dateStyle:'short',timeStyle:'short'})}${e.user?' by '+esc(e.user):''}${e.client?' for '+esc(e.client):''}</small><span class="tg ${e.st=='del'?'d':'o'}">${e.st=='del'?'Delivered':'Ordered'}</span>${e.bal>.005?`<span class="tg b">Owes ${R(e.bal)}</span>`:'<span class="tg p">Paid</span>'}</span><b>${R(e.tot)}</b></div><div class="r2"><span>${e.st=='ord'?`<button class="sm2" data-i="${e.id}" onclick="markDel(this.dataset.i)">Mark delivered</button>`:''}${e.bal>.005?`<button class="sm2" data-i="${e.id}" onclick="recPay(this.dataset.i)">Record payment</button>`:''}</span><span style="white-space:nowrap"><button class="ic" data-i="${e.id}" onclick="se=this.dataset.i;iv=null;render();scrollTo(0,0)" aria-label="Edit sale">${PEN}</button><button class="ic d" data-i="${e.id}" onclick="delSale(this.dataset.i)" aria-label="Delete sale">${BIN}</button><button class="ic" data-i="${e.id}" onclick="iv=this.dataset.i;se=null;render();scrollTo(0,0)" aria-label="Invoice">${INV}</button></span></div></div>`).join('')||'<p class="empty">Nothing here.</p>'}`},
 stock:it=>{const L=lists(),l=Object.values(it).sort((a,b)=>a.name.localeCompare(b.name)),ed=ie&&it[ie]||{},e=!!ed.key;
@@ -151,7 +151,7 @@ function sell(){const it=calc()[$('#si').value],q=+$('#sq').value,p=+$('#sp2').v
  if(!(q>0)||!(p>=0))return toast('Enter a quantity and price');
  if(q>it.qty)return toast('Only '+it.qty+' in stock');
  if(ord&&!c)return toast('Enter the client name for an order');
- add('sale',it.key,q,it.cost,p,JSON.stringify(ord?{client:c,st:'ord'}:{client:c,st:'del',pf:1}));toast(ord?'Order recorded':'Sale recorded')}
+ ra=false;add('sale',it.key,q,it.cost,p,JSON.stringify(ord?{client:c,st:'ord'}:{client:c,st:'del',pf:1}));toast(ord?'Order recorded':'Sale recorded')}
 function markDel(i){const s=sales().find(x=>x.id==i);add('sedit',i,s.qty,'',s.price,JSON.stringify({st:'del'}));toast('Marked delivered')}
 function recPay(i){const s=sales().find(x=>x.id==i),a=+prompt('Amount received'+(s.client?' from '+s.client:'')+'?',s.bal.toFixed(2));
  if(!(a>0))return;if(a>s.bal+.005)return toast('That is more than the balance');add('spay',i,'','',a);toast('Payment recorded')}
