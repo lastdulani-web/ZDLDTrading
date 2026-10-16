@@ -94,7 +94,7 @@ async function sync(){
 
 function render(){
  document.documentElement.dataset.theme=S.th||'';$('#th').innerHTML=hi(dk()?SUN:MOON);$('#gr').innerHTML=hi(GEAR);$('#th').setAttribute('aria-label',dk()?'Switch to light mode':'Switch to dark mode');
- const n=soon().length,tabs={sell:'Sell',stock:'Stock',profit:'Profit',owed:'Owed'};if(!S.user)tabs.setup='Setup';
+ const n=soon().length,tabs={stock:'Stock',sell:'Sell',profit:'Profit',owed:'Owed'};if(!S.user)tabs.setup='Setup';
  $('#nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';oe=se=iv=ie=null;oa=fa=false;render()"><span class="ni">${ni(NI[k])}${k=='owed'&&n?`<i>${n}</i>`:''}</span>${v}</button>`).join('');
  $('#main').innerHTML=V[tab](calc())}
 
