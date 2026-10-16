@@ -167,7 +167,8 @@ function saveSale(){const s=sales().find(x=>x.id==se),it=calc()[s.item],q=+$('#e
  se=null;add('sedit',s.id,q,'',p,JSON.stringify({client:$('#ecn').value.trim()}));toast('Sale updated')}
 function delSale(i){if(confirm('Delete this sale? The stock goes back.')){if(se==i)se=null;if(iv==i)iv=null;add('sdel',i,'','','');toast('Sale deleted')}}
 function invNo(id){const a=S.ev.filter(e=>e.kind=='sale').sort((x,y)=>x.ts-y.ts);return 'INV-'+String(a.findIndex(e=>e.id==id)+1).padStart(4,'0')}
-function mkInv(){const s=sales().find(x=>x.id==iv),it=calc()[s.item]||{},c=$('#icn').value.trim(),ct=$('#icc').value.trim(),no=invNo(s.id);
+function mkInv(){try{mkInv0()}catch(e){toast('Invoice error: '+e.message)}}
+function mkInv0(){const s=sales().find(x=>x.id==iv),it=calc()[s.item]||{},c=$('#icn').value.trim(),ct=$('#icc').value.trim(),no=invNo(s.id);
  const u=invPdf({no,date:new Date(+s.ts).toLocaleDateString('en-ZA'),client:c,contact:ct,inv:lists().inv.filter(Boolean),item:(it.name||s.item).slice(0,48),qty:String(s.qty),price:R(s.price),total:R(s.qty*s.price),paid:R(s.pf?s.tot:s.paid),bal:R(s.bal)},LG);
  add('sedit',s.id,s.qty,'',s.price,JSON.stringify({client:c,contact:ct}));iv=null;render();
  outPdf(u,(no+(c?' '+c:'')).replace(/[^\w .-]/g,'')+'.pdf')}
@@ -217,9 +218,10 @@ function invPdf(d,img){let c=img?'q 70 0 0 70 40 752 cm /Im1 Do Q\n':'',y=800;
  y-=22;c+=T(d.item,40,y,10)+T(d.qty,340,y,10)+T(d.price,400,y,10)+T(d.total,490,y,10)+Ln(y-8);
  y-=30;c+=T('Total: '+d.total,370,y,11);y-=16;c+=T('Paid: '+d.paid,370,y,11);y-=20;c+=T('Balance due: '+d.bal,370,y,13,1);
  return pdfDoc(c,img)}
-async function outPdf(u,name){const f=new File([u],name,{type:'application/pdf'});
- if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:name});return}catch(e){if(e.name=='AbortError')return}}
- const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=name;a.click()}
+async function outPdf(u,name){try{const f=new File([u],name,{type:'application/pdf'});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:name});return}catch(e){if(e.name=='AbortError')return;toast('Share failed ('+e.name+'), trying another way')}}
+ const url=URL.createObjectURL(f);if(!window.open(url,'_blank')){const a=document.createElement('a');a.href=url;a.download=name;a.click()}
+ }catch(e){toast('Could not create the PDF: '+e.message)}}
 let LG=null;(async()=>{try{const im=new Image();im.src='logo-gold.png';await im.decode();const c=document.createElement('canvas');c.width=c.height=160;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,160,160);x.drawImage(im,0,0,160,160);const d=x.getImageData(0,0,160,160).data;let b='';for(let i=0;i<d.length;i+=4)b+=String.fromCharCode(d[i],d[i+1],d[i+2]);LG=b}catch(e){}})();
 /*END*/
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
