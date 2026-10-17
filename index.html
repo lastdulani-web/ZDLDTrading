@@ -21,7 +21,7 @@ small{display:block;color:var(--mute);font-size:13px}.low{color:var(--bad);font-
 h3{margin:18px 0 4px;font-size:15px}.empty{color:var(--mute);font-size:14px}
 .n{font-size:40px;font-weight:700;color:var(--gold)}.neg{color:var(--bad)}
 .g{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px}.g div{border-top:2px solid var(--gold);padding-top:6px}.g b{font-size:18px}
-.seg{display:flex;gap:6px;margin-bottom:14px}.seg button{flex:1;padding:8px 2px;font-size:13px}
+.seg{display:flex;gap:6px;margin-bottom:14px}.seg button{flex:1;padding:8px 1px;font-size:12px}
 .seg .on{background:var(--btn);color:var(--onbtn);border-color:var(--btn)}
 nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}
 nav button{flex:1;border:0;border-radius:0;padding:9px 0 6px;background:none;font-weight:600;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--mute)}.ni{position:relative;display:grid}.ni i{position:absolute;top:-5px;right:-10px;background:#c0392b;color:#fff;font:700 10px/1 system-ui;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
@@ -36,7 +36,7 @@ html.boot{background:#a57c00}@keyframes fi{from{opacity:0}}#sp{position:fixed;in
 <main id="main"></main><nav id="nav"></nav><div id="t"></div><div id="rep"></div>
 <script>
 const $=s=>document.querySelector(s),jp=s=>{try{return JSON.parse(s)||{}}catch(x){return{}}};
-let S=JSON.parse(localStorage.zdld||'{"ev":[],"pend":[],"user":"","url":"","th":""}'),tab=S.user?'sell':'setup',rg='7',sc=false,oe=null,oa=false,fa=false,se=null,iv=null,ie=null,sf='a',ra=false,cart=[],ca=false,ce=null,ka=false,ke=null;
+let S=JSON.parse(localStorage.zdld||'{"ev":[],"pend":[],"user":"","url":"","th":""}'),tab=S.user?'sell':'setup',rg='7',sc=false,oe=null,oa=false,fa=false,se=null,iv=null,ie=null,sf='a',ra=false,cart=[],ca=false,ce=null,ka=false,ke=null,oh=false;
 const save=()=>localStorage.zdld=JSON.stringify(S);
 const R=n=>'R'+(+n).toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2});
 const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
@@ -72,7 +72,7 @@ function sales(){const o={};
 function orders(){const g={};
  sales().forEach(x=>{const k=x.oid||x.id;(g[k]=g[k]||{id:k,lines:[]}).lines.push(x)});
  return Object.values(g).map(o=>{const L=o.lines,f=L[0];
-  Object.assign(o,{ts:Math.min(...L.map(x=>x.ts)),user:f.user,client:f.client||'',contact:f.contact||'',st:L.every(x=>x.st=='del')?'del':'ord',tot:L.reduce((a,x)=>a+x.tot,0),paid:L.reduce((a,x)=>a+x.paid,0),pf:L.every(x=>x.pf)});
+  Object.assign(o,{ts:Math.min(...L.map(x=>x.ts)),user:f.user,dd:f.dd||'',client:f.client||'',contact:f.contact||'',st:L.every(x=>x.st=='del')?'del':'ord',tot:L.reduce((a,x)=>a+x.tot,0),paid:L.reduce((a,x)=>a+x.paid,0),pf:L.every(x=>x.pf)});
   o.bal=o.pf?0:Math.max(0,o.tot-o.paid);return o})}
 const cts=c=>new Date((c.d||td())+'T00:00:00').getTime();
 function costs(){const o={};S.ev.slice().sort((a,b)=>a.ts-b.ts).forEach(e=>{
@@ -83,11 +83,12 @@ function clients(){const o={};S.ev.slice().sort((a,b)=>a.ts-b.ts).forEach(e=>{
  if(e.kind=='cl')o[e.id]={id:e.id,name:e.item,...jp(e.meta)};
  else if(e.kind=='cle'&&o[e.item])Object.assign(o[e.item],jp(e.meta));
  else if(e.kind=='cld')delete o[e.item]});return Object.values(o)}
+const fmtD=d=>new Date(d+'T00:00:00').toLocaleDateString('en-ZA',{day:'numeric',month:'short'}),fmtT=t=>new Date(t).toLocaleDateString('en-ZA',{day:'numeric',month:'short'});
 const waNum=t=>{let d=String(t).replace(/\D/g,'');if(d[0]=='0')d='27'+d.slice(1);return d};
 function owed(){const o={};
  S.ev.slice().sort((a,b)=>a.ts-b.ts).forEach(e=>{
   if(e.kind=='owe')o[e.id]={id:e.id,party:e.item,amt:+e.cost,paid:0,...jp(e.meta)};
-  else if(e.kind=='pay'&&o[e.item])o[e.item].paid+=+e.price;
+  else if(e.kind=='pay'&&o[e.item]){o[e.item].paid+=+e.price;(o[e.item].pays=o[e.item].pays||[]).push({ts:e.ts,a:+e.price})}
   else if(e.kind=='oedit'&&o[e.item])Object.assign(o[e.item],jp(e.meta),{amt:+e.cost});
   else if(e.kind=='odel')delete o[e.item]});return Object.values(o)}
 const open=()=>owed().filter(o=>o.amt-o.paid>.005);
@@ -113,7 +114,7 @@ async function sync(){
 function render(){
  document.documentElement.dataset.theme=S.th||'';$('#th').innerHTML=hi(dk()?SUN:MOON);$('#gr').innerHTML=hi(GEAR);$('#th').setAttribute('aria-label',dk()?'Switch to light mode':'Switch to dark mode');
  const n=soon().length,tabs={stock:'Stock',sell:'Sell',clients:'Clients',profit:'Profit',owed:'Owed'};if(!S.user)tabs.setup='Setup';
- $('#nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';oe=se=iv=ie=ce=ke=null;oa=fa=ra=ca=ka=false;cart=[];render()"><span class="ni">${ni(NI[k])}${k=='owed'&&n?`<i>${n}</i>`:''}</span>${v}</button>`).join('');
+ $('#nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';oe=se=iv=ie=ce=ke=null;oa=fa=ra=ca=ka=false;cart=[];oh=false;render()"><span class="ni">${ni(NI[k])}${k=='owed'&&n?`<i>${n}</i>`:''}</span>${v}</button>`).join('');
  $('#main').innerHTML=V[tab](calc())}
 
 const opts=(a,v)=>'<option value="">None</option>'+(v&&!a.includes(v)?[...a,v]:a).map(x=>`<option${x==v?' selected':''}>${esc(x)}</option>`).join('');
@@ -121,20 +122,22 @@ const V={
 sell:it=>{const l=Object.values(it),n=soon().length,nm=k=>(it[k]||{}).name||k;
  const ban=n?`<p class="low" onclick="tab='owed';render()">${n} payment${n>1?'s':''} due soon or overdue. Tap to see.</p>`:'';
  const all=orders(),es=se&&all.find(x=>x.id==se),vs=iv&&all.find(x=>x.id==iv),ci=vs&&clients().find(x=>x.name.toLowerCase()==vs.client.toLowerCase())||{};
- const ef=es?`<div class="card"><b>Edit order</b><label>Client name<input id="ecn" value="${esc(es.client)}"></label>${es.lines.map((x,i)=>`<small>${esc(nm(x.item))}</small><div class="row"><label>Qty<input id="q${i}" type="number" min="1" value="${x.qty}"></label><label>Price each<input id="p${i}" type="number" step="0.01" value="${x.price}"></label></div>`).join('')}<button class="big" onclick="saveSale()">Update order</button><button class="big" ${CB} onclick="se=null;render()">Cancel</button></div>`:'';
+ const ef=es?`<div class="card"><b>Edit order</b><label>Client name<input id="ecn" value="${esc(es.client)}"></label>${es.st=='ord'?`<label>Delivery date (optional)<input id="edd" type="date" value="${es.dd}"></label>`:''}${es.lines.map((x,i)=>`<small>${esc(nm(x.item))}</small><div class="row"><label>Qty<input id="q${i}" type="number" min="1" value="${x.qty}"></label><label>Price each<input id="p${i}" type="number" step="0.01" value="${x.price}"></label></div>`).join('')}<button class="big" onclick="saveSale()">Update order</button><button class="big" ${CB} onclick="se=null;render()">Cancel</button></div>`:'';
  const vf=vs?`<div class="card"><b>Invoice ${invNo(vs.id)}</b><small>${vs.lines.length} item${vs.lines.length>1?'s':''}, ${R(vs.tot)}</small><label>Client name<input id="icn" value="${esc(vs.client)}"></label><label>Client contact or address<input id="icc" value="${esc(vs.contact||[ci.addr,ci.tel].filter(Boolean).join(', '))}"></label><button class="big" onclick="mkInv()">Create invoice PDF</button><button class="big" ${CB} onclick="iv=null;render()">Cancel</button></div>`:'';
  if(!l.length)return ban+'<p class="empty">No items yet. Add your first item under Stock.</p>';
- const ow=all.reduce((a,x)=>a+x.bal,0),F={a:'All',d:'To deliver',p:'Unpaid',x:'Paid'},ok={a:()=>1,d:x=>x.st=='ord',p:x=>x.bal>.005,x:x=>x.st=='del'&&x.bal<=.005};
- const rs=all.filter(ok[sf]).sort((a,b)=>b.ts-a.ts).slice(0,30);
- return ban+ef+vf+`<div class="g"><div><small>To deliver</small><b>${all.filter(x=>x.st=='ord').length}</b></div><div><small>Customers owe you</small><b>${R(ow)}</b></div></div>
+ const dn=all.filter(x=>x.st=='ord'&&x.dd&&x.dd<=td()).length,dbn=dn?`<p class="low" onclick="sf='dt';render()">${dn} deliver${dn>1?'ies':'y'} due today or late. Tap to see.</p>`:'';
+ const ow=all.reduce((a,x)=>a+x.bal,0),F={a:'All',d:'To deliver',dt:'Due now',p:'Unpaid',x:'Paid'},ok={a:()=>1,d:x=>x.st=='ord',dt:x=>x.st=='ord'&&x.dd&&x.dd<=td(),p:x=>x.bal>.005,x:x=>x.st=='del'&&x.bal<=.005};
+ const rs=all.filter(ok[sf]).sort(sf=='d'||sf=='dt'?(a,b)=>(a.dd||'9')<(b.dd||'9')?-1:1:(a,b)=>b.ts-a.ts).slice(0,30);
+ return ban+dbn+ef+vf+`<div class="g" style="grid-template-columns:repeat(3,1fr)"><div><small>To deliver</small><b>${all.filter(x=>x.st=='ord').length}</b></div><div><small>Due now</small><b>${dn}</b></div><div><small>Customers owe you</small><b>${R(ow)}</b></div></div>
  ${ra?`<div class="card"><label>Item<select id="si" onchange="$('#sp2').value=calc()[this.value].price">${l.map(i=>`<option value="${esc(i.key)}">${esc(i.name)} (${i.qty} left)</option>`).join('')}</select></label>
  <div class="row"><label>Qty<input id="sq" type="number" min="1" value="1"></label><label>Price each<input id="sp2" type="number" step="0.01" value="${l[0].price}"></label></div>
  <button class="sm2" onclick="addLine()">+ Add item to order</button><div id="cart">${cartH()}</div>
  <label>Client name<input id="sc" list="cl" placeholder="Needed for orders"><datalist id="cl">${clients().map(c=>`<option value="${esc(c.name)}">`).join('')}</datalist></label>
  <label>Payment<select id="sm"><option value="o">Order: deliver, then they pay</option><option value="c">Paid now</option></select></label>
+ <label>Delivery date (optional)<input id="sdd" type="date"></label>
  <button class="big" onclick="sell()">Record order</button><button class="big" ${CB} onclick="ra=false;cart=[];render()">Cancel</button></div>`:`<button class="add" onclick="ra=true;render()"><b>+</b> Record sale</button>`}
  <div class="seg">${Object.entries(F).map(([k,v])=>`<button class="${k==sf?'on':''}" onclick="sf='${k}';render()">${v}</button>`).join('')}</div>
- ${rs.map(o=>`<div class="oe"><div class="r1"><span>${o.lines.map(x=>`${x.qty} × ${esc(nm(x.item))}`).join('<br>')}<small>${new Date(+o.ts).toLocaleString('en-ZA',{dateStyle:'short',timeStyle:'short'})}${o.user?' by '+esc(o.user):''}${o.client?' for '+esc(o.client):''}</small><span class="tg ${o.st=='del'?'d':'o'}">${o.st=='del'?'Delivered':'Ordered'}</span>${o.bal>.005?`<span class="tg b">Owes ${R(o.bal)}</span>`:'<span class="tg p">Paid</span>'}</span><b>${R(o.tot)}</b></div><div class="r2"><span>${o.st=='ord'?`<button class="sm2" data-i="${o.id}" onclick="markDel(this.dataset.i)">Mark delivered</button>`:''}${o.bal>.005?`<button class="sm2" data-i="${o.id}" onclick="recPay(this.dataset.i)">Record payment</button>`:''}</span><span style="white-space:nowrap"><button class="ic" data-i="${o.id}" onclick="se=this.dataset.i;iv=null;render();scrollTo(0,0)" aria-label="Edit order">${PEN}</button><button class="ic d" data-i="${o.id}" onclick="delSale(this.dataset.i)" aria-label="Delete order">${BIN}</button><button class="ic" data-i="${o.id}" onclick="iv=this.dataset.i;se=null;render();scrollTo(0,0)" aria-label="Invoice">${INV}</button></span></div></div>`).join('')||'<p class="empty">Nothing here.</p>'}`},
+ ${rs.map(o=>`<div class="oe"><div class="r1"><span>${o.lines.map(x=>`${x.qty} × ${esc(nm(x.item))}`).join('<br>')}<small>${new Date(+o.ts).toLocaleString('en-ZA',{dateStyle:'short',timeStyle:'short'})}${o.user?' by '+esc(o.user):''}${o.client?' for '+esc(o.client):''}</small><span class="tg ${o.st=='del'?'d':'o'}">${o.st=='del'?'Delivered':'Ordered'}</span>${o.st=='ord'&&o.dd?`<span class="tg ${o.dd<td()?'b':'o'}">${o.dd<td()?'Late: '+fmtD(o.dd):o.dd==td()?'Due today':'Due '+fmtD(o.dd)}</span>`:''}${o.bal>.005?`<span class="tg b">Owes ${R(o.bal)}</span>`:'<span class="tg p">Paid</span>'}</span><b>${R(o.tot)}</b></div><div class="r2"><span>${o.st=='ord'?`<button class="sm2" data-i="${o.id}" onclick="markDel(this.dataset.i)">Mark delivered</button>`:''}${o.bal>.005?`<button class="sm2" data-i="${o.id}" onclick="recPay(this.dataset.i)">Record payment</button>`:''}</span><span style="white-space:nowrap"><button class="ic" data-i="${o.id}" onclick="se=this.dataset.i;iv=null;render();scrollTo(0,0)" aria-label="Edit order">${PEN}</button><button class="ic d" data-i="${o.id}" onclick="delSale(this.dataset.i)" aria-label="Delete order">${BIN}</button><button class="ic" data-i="${o.id}" onclick="iv=this.dataset.i;se=null;render();scrollTo(0,0)" aria-label="Invoice">${INV}</button></span></div></div>`).join('')||'<p class="empty">Nothing here.</p>'}`},
 stock:it=>{const L=lists(),l=Object.values(it).sort((a,b)=>a.name.localeCompare(b.name)),ed=ie&&it[ie]||{},e=!!ed.key,tot=l.reduce((a,i)=>a+Math.max(i.qty,0),0),sold=sales().reduce((a,x)=>a+x.qty,0);
  return`<div class="g"><div><small>Units in stock</small><b>${tot}</b></div><div><small>Units sold</small><b>${sold}</b></div></div>${(ie||fa)?`<div class="card"><b>${e?'Edit item':'Add or update an item'}</b><label>Name (optional)<input id="an" value="${esc(ed.n||'')}"></label>
  <label>Item type<select id="at">${opts(L.type,ed.t)}</select></label>
@@ -146,6 +149,8 @@ profit:it=>{
  let rev=0,cost=0,u=0,by={};const f=fromT(),cs=costs().filter(c=>cts(c)>=f).sort((a,b)=>cts(b)-cts(a)),ct=cs.reduce((a,c)=>a+c.amt,0),L=lists(),ec=ce&&cs.find(x=>x.id==ce)||costs().find(x=>x.id==ce)||{};
  sales().filter(e=>e.st=='del'&&+(e.dts||e.ts)>=f).forEach(e=>{const r=e.qty*e.price,c=e.qty*e.cost;rev+=r;cost+=c;u+=+e.qty;by[e.item]=(by[e.item]||0)+r-c});
  const pr=rev-cost-ct,val=Object.values(it).reduce((a,i)=>a+Math.max(i.qty,0)*i.cost,0),cats=ec.cat&&!L.exp.includes(ec.cat)?[...L.exp,ec.cat]:L.exp;
+ const SL=sales(),qs={},last={};SL.forEach(e=>{if(+(e.dts||e.ts)>=f)qs[e.item]=(qs[e.item]||0)+e.qty;last[e.item]=Math.max(last[e.item]||0,+e.ts)});
+ const best=Object.entries(qs).sort((a,b)=>b[1]-a[1]).slice(0,5),slow=Object.values(it).filter(i=>i.qty>0&&!qs[i.key]).sort((a,b)=>b.qty*b.cost-a.qty*a.cost).slice(0,5);
  return`<div class="seg">${Object.entries(RN).map(([k,v])=>`<button class="${k==rg?'on':''}" onclick="rg='${k}';ca=false;ce=null;render()">${v}</button>`).join('')}</div>
  <div class="card"><small>Net profit (after costs)</small><div class="n ${pr<0?'neg':''}">${R(pr)}</div><small>${rev?Math.round(pr/rev*100)+'% margin':'No sales in this period'}</small></div>
  <div class="g"><div><small>Sales</small><b>${R(rev)}</b></div><div><small>Cost of goods</small><b>${R(cost)}</b></div><div><small>Other costs</small><b>${R(ct)}</b></div><div><small>Units sold</small><b>${u}</b></div><div><small>Stock value at cost</small><b>${R(val)}</b></div></div>
@@ -153,13 +158,16 @@ profit:it=>{
  <h3>Costs (courier, packaging, transport)</h3>
  ${(ca||ce)?`<div class="card" id="cf"><b>${ce?'Edit cost':'Add a cost'}</b><label>Category<select id="cc">${cats.map(x=>`<option${x==ec.cat?' selected':''}>${esc(x)}</option>`).join('')}</select></label><div class="row"><label>Amount<input id="cm" type="number" step="0.01" value="${ec.amt||''}"></label><label>Date<input id="cd" type="date" value="${ec.d||td()}"></label></div><label>Note (optional)<input id="cn2" value="${esc(ec.note||'')}"></label><button class="big" onclick="saveCost()">${ce?'Update':'Save'}</button><button class="big" ${CB} onclick="ca=false;ce=null;render()">Cancel</button></div>`:`<button class="add" onclick="ca=true;render()"><b>+</b> Add a cost</button>`}
  ${cs.map(c=>`<div class="li"><span>${esc(c.cat)}<small>${esc(c.note||'')}${c.note?', ':''}${c.d||''}</small></span><span style="white-space:nowrap"><b>${R(c.amt)}</b><button class="ic" data-i="${c.id}" onclick="ce=this.dataset.i;render();$('#cf')&&$('#cf').scrollIntoView()" aria-label="Edit cost">${PEN}</button><button class="ic d" data-i="${c.id}" onclick="delCost(this.dataset.i)" aria-label="Delete cost">${BIN}</button></span></div>`).join('')||'<p class="empty">No costs in this period.</p>'}
- <h3>Profit by item</h3>${Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="li"><span>${esc((it[k]||{}).name||k)}</span><b>${R(v)}</b></div>`).join('')||'<p class="empty">Nothing to show yet.</p>'}`},
-owed:()=>{const L=lists(),o=open().sort((a,b)=>(a.due||'9')<(b.due||'9')?-1:1),tot=o.reduce((a,x)=>a+x.amt-x.paid,0),t=td(),w=soon().map(x=>x.id),ed=oe&&owed().find(x=>x.id==oe)||{},cats=ed.cat&&!L.cat.includes(ed.cat)?[...L.cat,ed.cat]:L.cat;
+ <h3>Profit by item</h3>${Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="li"><span>${esc((it[k]||{}).name||k)}</span><b>${R(v)}</b></div>`).join('')||'<p class="empty">Nothing to show yet.</p>'}
+ <h3>Best sellers (units sold)</h3>${best.map(([k,q])=>`<div class="li"><span>${esc((it[k]||{}).name||k)}</span><b>${q}</b></div>`).join('')||'<p class="empty">No sales in this period.</p>'}
+ <h3>Slow movers (in stock, not sold in this period)</h3>${slow.map(i=>`<div class="li"><span>${esc(i.name)}<small>${i.qty} in stock, ${last[i.key]?'last sold '+fmtT(last[i.key]):'never sold'}</small></span><b>${R(i.qty*i.cost)}</b></div>`).join('')||'<p class="empty">Nothing stuck on the shelf.</p>'}`},
+owed:()=>{const pd=owed().filter(x=>x.amt-x.paid<=.005&&x.pays).sort((a,b)=>Math.max(...b.pays.map(p=>p.ts))-Math.max(...a.pays.map(p=>p.ts))),L=lists(),o=open().sort((a,b)=>(a.due||'9')<(b.due||'9')?-1:1),tot=o.reduce((a,x)=>a+x.amt-x.paid,0),t=td(),w=soon().map(x=>x.id),ed=oe&&owed().find(x=>x.id==oe)||{},cats=ed.cat&&!L.cat.includes(ed.cat)?[...L.cat,ed.cat]:L.cat;
  return`<div class="card"><small>Total you owe</small><div class="n">${R(tot)}</div></div>
  ${(oe||oa)?`<div class="card"><b>${ed.id?'Edit entry':'Add something you owe'}</b><label>Who do you owe?<input id="op" value="${esc(ed.party||'')}"></label>
  <div class="row"><label>Category<select id="oc">${cats.map(x=>`<option${x==ed.cat?' selected':''}>${esc(x)}</option>`).join('')}</select></label><label>Amount<input id="oa" type="number" step="0.01" value="${ed.amt||''}"></label></div>
  <label>Due date<input id="od" type="date" value="${ed.due||''}"></label><button class="big" onclick="addOwe()">${ed.id?'Update':'Save'}</button><button class="big" ${CB} onclick="oe=null;oa=false;render()">Cancel</button></div>`:`<button class="add" onclick="oa=true;render()"><b>+</b> Add something you owe</button>`}
- ${o.map(x=>`<div class="oe"><div class="r1"><span>${esc(x.party)}<small>${esc(x.cat||'')}${x.due?', due '+x.due:''}${x.paid?', paid '+R(x.paid):''}</small>${x.due&&x.due<t?'<small class="low">Overdue</small>':w.includes(x.id)?'<small class="low">Due within 7 days</small>':''}</span><b>${R(x.amt-x.paid)}</b></div><div class="r2"><button data-i="${x.id}" onclick="pay(this.dataset.i)">Pay</button><span><button class="ic" data-i="${x.id}" onclick="oe=this.dataset.i;render();scrollTo(0,0)" aria-label="Edit">${PEN}</button><button class="ic d" data-i="${x.id}" onclick="delOwe(this.dataset.i)" aria-label="Delete">${BIN}</button></span></div></div>`).join('')||'<p class="empty">Nothing owed right now.</p>'}`},
+ ${o.map(x=>`<div class="oe"><div class="r1"><span>${esc(x.party)}<small>${esc(x.cat||'')}${x.due?', due '+x.due:''}${x.paid?', paid '+R(x.paid):''}</small>${x.due&&x.due<t?'<small class="low">Overdue</small>':w.includes(x.id)?'<small class="low">Due within 7 days</small>':''}</span><b>${R(x.amt-x.paid)}</b></div><div class="r2"><button data-i="${x.id}" onclick="pay(this.dataset.i)">Pay</button><span><button class="ic" data-i="${x.id}" onclick="oe=this.dataset.i;render();scrollTo(0,0)" aria-label="Edit">${PEN}</button><button class="ic d" data-i="${x.id}" onclick="delOwe(this.dataset.i)" aria-label="Delete">${BIN}</button></span></div></div>`).join('')||'<p class="empty">Nothing owed right now.</p>'}
+ ${oh?`<h3>Paid off (${R(pd.reduce((a,x)=>a+x.amt,0))} so far)</h3>${pd.map(x=>`<div class="li"><span>${esc(x.party)}<small>${esc(x.cat||'')}, ${R(x.amt)}, paid ${fmtT(Math.max(...x.pays.map(p=>p.ts)))}</small></span><span style="white-space:nowrap"><span class="tg p">Paid</span><button class="ic d" data-i="${x.id}" onclick="delOwe(this.dataset.i)" aria-label="Delete">${BIN}</button></span></div>`).join('')||'<p class="empty">Nothing paid off yet.</p>'}<button class="sm2" onclick="oh=false;render()">Hide history</button>`:`<button class="sm2" onclick="oh=true;render()">Show paid-off history</button>`}`},
 clients:()=>{const cl=clients().sort((a,b)=>a.name.localeCompare(b.name)),os=orders(),ed=ke&&cl.find(x=>x.id==ke);
  const st=n=>{const m=os.filter(o=>o.client.toLowerCase()==n.toLowerCase());return{n:m.length,owes:m.reduce((a,o)=>a+o.bal,0)}};
  return(ke||ka?`<div class="card"><b>${ed?'Edit client':'Add a client'}</b><label>Name<input id="cn" value="${esc(ed?ed.name:'')}"${ed?' readonly':''}></label><label>WhatsApp number<input id="ct" type="tel" value="${esc(ed&&ed.tel||'')}" placeholder="e.g. 082 123 4567"></label><label>Address (optional)<input id="cad" value="${esc(ed&&ed.addr||'')}"></label><button class="big" onclick="saveClient()">${ed?'Update':'Save'}</button><button class="big" ${CB} onclick="ke=null;ka=false;render()">Cancel</button></div>`:`<button class="add" onclick="ka=true;render()"><b>+</b> Add client</button>`)+
@@ -184,7 +192,7 @@ function sell(){const L=[...cart],q=+$('#sq').value,A=calc();
  if(!L.length)return toast('Add at least one item');
  const c=$('#sc').value.trim(),ord=$('#sm').value=='o';
  if(ord&&!c)return toast('Enter the client name for an order');
- const m=ord?{client:c,st:'ord'}:{client:c,st:'del',pf:1};let oid;cart=[];ra=false;
+ const dd=$('#sdd').value,m=ord?{client:c,st:'ord',dd}:{client:c,st:'del',pf:1};let oid;cart=[];ra=false;
  bat(()=>{if(c&&!clients().some(x=>x.name.toLowerCase()==c.toLowerCase()))mk('cl',c,'','','','{}');
   L.forEach(x=>{const e=mk('sale',x.k,x.q,A[x.k].cost,x.p,JSON.stringify(oid?{...m,oid}:m));if(!oid)oid=e.id})});
  toast(ord?'Order recorded':'Sale recorded')}
@@ -197,11 +205,11 @@ function addItem(){const n=$('#an').value.trim(),t=$('#at').value,s=$('#as').val
  if(ie){const k=ie,cur=calc()[k].qty;ie=null;add('iedit',k,'',co,p,m);if(q!=cur)add('restock',k,q-cur,'','');toast('Item updated')}
  else{add('item',lab({n,t,s,c}),q,co,p,m);toast('Item saved')}}
 function delItem(k){const i=calc()[k];if(confirm('Delete '+i.name+'? Past sales are kept.')){if(ie==k)ie=null;add('idel',k,'','','');toast('Item deleted')}}
-function saveSale(){const o=orders().find(x=>x.id==se),A=calc(),c=$('#ecn').value.trim(),v=[];
+function saveSale(){const o=orders().find(x=>x.id==se),A=calc(),c=$('#ecn').value.trim(),dd=$('#edd')?$('#edd').value:undefined,v=[];
  for(let i=0;i<o.lines.length;i++){const l=o.lines[i],q=+$('#q'+i).value,p=+$('#p'+i).value,it=A[l.item];
   if(!(q>0)||!(p>=0))return toast('Enter a quantity and price for every item');
   if(it&&q>it.qty+l.qty)return toast('Only '+(it.qty+l.qty)+' available');v.push([l,q,p])}
- se=null;bat(()=>v.forEach(([l,q,p])=>mk('sedit',l.id,q,'',p,JSON.stringify({client:c}))));toast('Order updated')}
+ se=null;bat(()=>v.forEach(([l,q,p])=>mk('sedit',l.id,q,'',p,JSON.stringify({client:c,dd}))));toast('Order updated')}
 function delSale(i){const o=orders().find(x=>x.id==i);if(confirm('Delete this order? The stock goes back.')){if(se==i)se=null;if(iv==i)iv=null;bat(()=>o.lines.forEach(l=>mk('sdel',l.id,'','','')));toast('Order deleted')}}
 function saveCost(){const a=+$('#cm').value;if(!(a>0))return toast('Enter the amount');
  const m=JSON.stringify({cat:$('#cc').value,note:$('#cn2').value.trim(),d:$('#cd').value||td()});
@@ -238,7 +246,7 @@ function cfg(){S.user=$('#un').value.trim();S.url=$('#ur').value.trim();sc=false
 function fromT(){const d=new Date();d.setHours(0,0,0,0);return{t:d.getTime(),'7':Date.now()-6048e5,m:new Date(d.getFullYear(),d.getMonth(),1).getTime(),a:0}[rg]}
 function data(){const it=calc(),f=fromT(),sa=sales().filter(e=>+(e.dts||e.ts)>=f).sort((a,b)=>a.ts-b.ts);
  return{
- sales:[['Date','By','Item','Type','Size','Colour','Qty','Price each','Cost each','Profit','Client','Status','Paid','Balance'],...sa.map(e=>{const i=it[e.item]||{};return[new Date(+e.ts).toLocaleDateString('en-ZA'),e.user||'',i.n||i.name||e.item,i.t||'',i.s||'',i.c||'',+e.qty,+e.price,+e.cost,(e.price-e.cost)*e.qty,e.client||'',e.st=='del'?'Delivered':'Ordered',e.pf?e.tot:e.paid,e.bal]})],
+ sales:[['Date','By','Item','Type','Size','Colour','Qty','Price each','Cost each','Profit','Client','Status','Paid','Balance','Delivery date'],...sa.map(e=>{const i=it[e.item]||{};return[new Date(+e.ts).toLocaleDateString('en-ZA'),e.user||'',i.n||i.name||e.item,i.t||'',i.s||'',i.c||'',+e.qty,+e.price,+e.cost,(e.price-e.cost)*e.qty,e.client||'',e.st=='del'?'Delivered':'Ordered',e.pf?e.tot:e.paid,e.bal,e.dd||'']})],
  stock:[['Item','Type','Size','Colour','In stock','Cost','Price'],...Object.values(it).map(i=>[i.n||i.name,i.t||'',i.s||'',i.c||'',i.qty,i.cost,i.price])],
  ow:[['Owed to','Category','Amount','Paid','Outstanding','Due'],...owed().map(o=>[o.party,o.cat||'',o.amt,o.paid,o.amt-o.paid,o.due||''])],
  co:[['Date','Category','Note','Amount'],...costs().filter(c=>cts(c)>=f).sort((a,b)=>cts(a)-cts(b)).map(c=>[c.d||'',c.cat,c.note||'',c.amt])]}}
