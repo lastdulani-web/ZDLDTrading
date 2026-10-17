@@ -36,18 +36,19 @@ html.boot{background:#a57c00}@keyframes fi{from{opacity:0}}#sp{position:fixed;in
 <main id="main"></main><nav id="nav"></nav><div id="t"></div><div id="rep"></div>
 <script>
 const $=s=>document.querySelector(s),jp=s=>{try{return JSON.parse(s)||{}}catch(x){return{}}};
-let S=JSON.parse(localStorage.zdld||'{"ev":[],"pend":[],"user":"","url":"","th":""}'),tab=S.user?'sell':'setup',rg='7',sc=false,oe=null,oa=false,fa=false,se=null,iv=null,ie=null,sf='a',ra=false;
+let S=JSON.parse(localStorage.zdld||'{"ev":[],"pend":[],"user":"","url":"","th":""}'),tab=S.user?'sell':'setup',rg='7',sc=false,oe=null,oa=false,fa=false,se=null,iv=null,ie=null,sf='a',ra=false,cart=[],ca=false,ce=null,ka=false,ke=null;
 const save=()=>localStorage.zdld=JSON.stringify(S);
 const R=n=>'R'+(+n).toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2});
 const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
-const setSt=t=>{const m={'This device only':[DEV,'Saved on this device only'],'Offline, saved here':[OFF,'Offline, saved on this device'],'Syncing…':[SYN,'Syncing'],'Synced':[OK,'Synced']}[t]||[OK,t],e=$('#st');e.innerHTML=hi(m[0]);e.firstChild.classList.toggle('spin',t=='Syncing…');e.style.color=t=='Offline, saved here'?'#e0b13a':'';e.title=m[1];e.setAttribute('aria-label',m[1])},td=()=>new Date().toISOString().slice(0,10);
+const setSt=t=>{const m={'This device only':[DEV,'Saved on this device only'],'Offline, saved here':[OFF,'Offline, saved on this device'],'Syncing…':[SYN,'Syncing'],'Synced':[OK,'Synced']}[t]||[OK,t],e=$('#st');e.innerHTML=hi(m[0]);e.firstChild.classList.toggle('spin',t=='Syncing…');e.style.color=t=='Offline, saved here'?'#e0b13a':'';e.title=m[1];e.setAttribute('aria-label',m[1])},td=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 function toast(m){const t=$('#t');t.textContent=m;t.className='s';setTimeout(()=>t.className='',2200)}
-const DL={type:'T-shirt,Hoodie,Dress,Jeans,Shirt,Cap',size:'XS,S,M,L,XL,XXL,One size',colour:'Black,White,Navy,Red,Blue,Green,Grey',cat:'Loan,SARS tax,Courier,Supplier,Other',inv:''};
+const DL={type:'T-shirt,Hoodie,Dress,Jeans,Shirt,Cap',size:'XS,S,M,L,XL,XXL,One size',colour:'Black,White,Navy,Red,Blue,Green,Grey',cat:'Loan,SARS tax,Courier,Supplier,Other',inv:'',bank:'',exp:'Courier,Packaging,Transport,Other'};
 const ic=d=>`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`,PEN=ic('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/>'),BIN=ic('<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/>'),dk=()=>S.th?S.th=='dark':matchMedia('(prefers-color-scheme:dark)').matches;
 const BOX=ic('<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/><path d="M12 8l3 1.5v3L12 14l-3-1.5v-3z"/>'),INV=ic('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/>'),CB='style="background:none;color:var(--ink);border-color:var(--line)"',lab=m=>[m.n,m.t,m.s,m.c].filter(Boolean).join(' / ');
 const hi=d=>ic(d).replace('width="18" height="18"','width="26" height="26"'),SUN='<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',MOON='<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>',GEAR='<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',CLOUD='<path d="M18 10a6 6 0 0 0-11.5-1.5A4.5 4.5 0 0 0 7 18h11a4 4 0 0 0 0-8z"/>',OK=CLOUD+'<path d="M9 13l2 2 4-4"/>',OFF=CLOUD+'<path d="M3 3l18 18"/>',DEV='<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',SYN='<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>';
-const ni=d=>ic(d).replace('width="18" height="18"','width="24" height="24"'),NI={setup:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',sell:'<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',stock:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3.3 7.5L12 12.5l8.7-5M12 22V12.5"/>',profit:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',owed:'<path d="M3 7a2 2 0 0 1 2-2h12v4"/><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 14h2"/>'};
-const LN={type:'Item types',size:'Item sizes',colour:'Colours',cat:'Money owed categories',inv:'Invoice details'};
+const ni=d=>ic(d).replace('width="18" height="18"','width="24" height="24"'),NI={clients:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',setup:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',sell:'<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',stock:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3.3 7.5L12 12.5l8.7-5M12 22V12.5"/>',profit:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',owed:'<path d="M3 7a2 2 0 0 1 2-2h12v4"/><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 14h2"/>'};
+const WA=ic('<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 1 1 21 11.5z"/>');
+const LN={type:'Item types',size:'Item sizes',colour:'Colours',cat:'Money owed categories',inv:'Invoice details (address and contact, print at the top)',bank:'Banking details (print under the items on invoices)',exp:'Cost categories'};
 const RN={t:'Today','7':'Last 7 days',m:'This month',a:'All time'};
 function lists(){const o={};for(const k in DL)o[k]=DL[k].split(',');
  S.ev.filter(e=>e.kind=='list').sort((a,b)=>a.ts-b.ts).forEach(e=>{const a=jp(e.meta);if(Array.isArray(a))o[e.item]=a});return o}
@@ -68,6 +69,21 @@ function sales(){const o={};
   else if(e.kind=='spay'&&o[e.item])o[e.item].paid+=+e.price;
   else if(e.kind=='sdel')delete o[e.item]});
  return Object.values(o).map(x=>{x.tot=x.qty*x.price;x.bal=x.pf?0:Math.max(0,x.tot-x.paid);return x})}
+function orders(){const g={};
+ sales().forEach(x=>{const k=x.oid||x.id;(g[k]=g[k]||{id:k,lines:[]}).lines.push(x)});
+ return Object.values(g).map(o=>{const L=o.lines,f=L[0];
+  Object.assign(o,{ts:Math.min(...L.map(x=>x.ts)),user:f.user,client:f.client||'',contact:f.contact||'',st:L.every(x=>x.st=='del')?'del':'ord',tot:L.reduce((a,x)=>a+x.tot,0),paid:L.reduce((a,x)=>a+x.paid,0),pf:L.every(x=>x.pf)});
+  o.bal=o.pf?0:Math.max(0,o.tot-o.paid);return o})}
+const cts=c=>new Date((c.d||td())+'T00:00:00').getTime();
+function costs(){const o={};S.ev.slice().sort((a,b)=>a.ts-b.ts).forEach(e=>{
+ if(e.kind=='cost')o[e.id]={id:e.id,cat:e.item,amt:+e.cost,...jp(e.meta)};
+ else if(e.kind=='cedit'&&o[e.item])Object.assign(o[e.item],jp(e.meta),{amt:+e.cost});
+ else if(e.kind=='cdel')delete o[e.item]});return Object.values(o)}
+function clients(){const o={};S.ev.slice().sort((a,b)=>a.ts-b.ts).forEach(e=>{
+ if(e.kind=='cl')o[e.id]={id:e.id,name:e.item,...jp(e.meta)};
+ else if(e.kind=='cle'&&o[e.item])Object.assign(o[e.item],jp(e.meta));
+ else if(e.kind=='cld')delete o[e.item]});return Object.values(o)}
+const waNum=t=>{let d=String(t).replace(/\D/g,'');if(d[0]=='0')d='27'+d.slice(1);return d};
 function owed(){const o={};
  S.ev.slice().sort((a,b)=>a.ts-b.ts).forEach(e=>{
   if(e.kind=='owe')o[e.id]={id:e.id,party:e.item,amt:+e.cost,paid:0,...jp(e.meta)};
@@ -77,9 +93,9 @@ function owed(){const o={};
 const open=()=>owed().filter(o=>o.amt-o.paid>.005);
 const soon=()=>{const l=new Date(Date.now()+6048e5).toISOString().slice(0,10);return open().filter(o=>o.due&&o.due<=l)};
 
-function add(kind,item,qty,cost,price,meta){
- const e={id:'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),kind,user:S.user,item,qty,cost,price,meta:meta||''};
- S.ev.push(e);S.pend.push(e.id);save();render();sync()}
+function mk(kind,item,qty,cost,price,meta){const e={id:'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),kind,user:S.user,item,qty,cost,price,meta:meta||''};S.ev.push(e);S.pend.push(e.id);return e}
+function bat(f){f();save();render();sync()}
+function add(...a){const e=mk(...a);save();render();sync();return e}
 
 async function sync(){
  if(!S.url){setSt('This device only');return}
@@ -91,33 +107,34 @@ async function sync(){
   const r=await(await fetch(S.url)).json(),have=new Set(S.ev.map(e=>e.id));
   r.forEach(e=>{if(!have.has(e.id))S.ev.push(e)});
   S.pend=S.pend.filter(i=>!p.some(e=>e.id==i));save();setSt('Synced');
-  if(!document.activeElement.matches('input,select,textarea')&&!oe&&!oa&&!fa&&!ra&&!se&&!iv&&!ie)render();
+  if(!document.activeElement.matches('input,select,textarea')&&!oe&&!oa&&!fa&&!ra&&!se&&!iv&&!ie&&!ca&&!ce&&!ka&&!ke)render();
  }catch(x){setSt('Offline, saved here')}}
 
 function render(){
  document.documentElement.dataset.theme=S.th||'';$('#th').innerHTML=hi(dk()?SUN:MOON);$('#gr').innerHTML=hi(GEAR);$('#th').setAttribute('aria-label',dk()?'Switch to light mode':'Switch to dark mode');
- const n=soon().length,tabs={stock:'Stock',sell:'Sell',profit:'Profit',owed:'Owed'};if(!S.user)tabs.setup='Setup';
- $('#nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';oe=se=iv=ie=null;oa=fa=ra=false;render()"><span class="ni">${ni(NI[k])}${k=='owed'&&n?`<i>${n}</i>`:''}</span>${v}</button>`).join('');
+ const n=soon().length,tabs={stock:'Stock',sell:'Sell',clients:'Clients',profit:'Profit',owed:'Owed'};if(!S.user)tabs.setup='Setup';
+ $('#nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';oe=se=iv=ie=ce=ke=null;oa=fa=ra=ca=ka=false;cart=[];render()"><span class="ni">${ni(NI[k])}${k=='owed'&&n?`<i>${n}</i>`:''}</span>${v}</button>`).join('');
  $('#main').innerHTML=V[tab](calc())}
 
 const opts=(a,v)=>'<option value="">None</option>'+(v&&!a.includes(v)?[...a,v]:a).map(x=>`<option${x==v?' selected':''}>${esc(x)}</option>`).join('');
 const V={
 sell:it=>{const l=Object.values(it),n=soon().length,nm=k=>(it[k]||{}).name||k;
  const ban=n?`<p class="low" onclick="tab='owed';render()">${n} payment${n>1?'s':''} due soon or overdue. Tap to see.</p>`:'';
- const all=sales(),es=se&&all.find(x=>x.id==se),vs=iv&&all.find(x=>x.id==iv);
- const ef=es?`<div class="card"><b>Edit sale</b><small>${esc(nm(es.item))}</small><label>Client name<input id="ecn" value="${esc(es.client||'')}"></label><div class="row"><label>Qty<input id="eq" type="number" min="1" value="${es.qty}"></label><label>Price each<input id="ep" type="number" step="0.01" value="${es.price}"></label></div><button class="big" onclick="saveSale()">Update sale</button><button class="big" ${CB} onclick="se=null;render()">Cancel</button></div>`:'';
- const vf=vs?`<div class="card"><b>Invoice ${invNo(vs.id)}</b><small>${vs.qty} × ${esc(nm(vs.item))}, ${R(vs.tot)}</small><label>Client name<input id="icn" value="${esc(vs.client||'')}"></label><label>Client contact or address<input id="icc" value="${esc(vs.contact||'')}"></label><button class="big" onclick="mkInv()">Create invoice PDF</button><button class="big" ${CB} onclick="iv=null;render()">Cancel</button></div>`:'';
+ const all=orders(),es=se&&all.find(x=>x.id==se),vs=iv&&all.find(x=>x.id==iv),ci=vs&&clients().find(x=>x.name.toLowerCase()==vs.client.toLowerCase())||{};
+ const ef=es?`<div class="card"><b>Edit order</b><label>Client name<input id="ecn" value="${esc(es.client)}"></label>${es.lines.map((x,i)=>`<small>${esc(nm(x.item))}</small><div class="row"><label>Qty<input id="q${i}" type="number" min="1" value="${x.qty}"></label><label>Price each<input id="p${i}" type="number" step="0.01" value="${x.price}"></label></div>`).join('')}<button class="big" onclick="saveSale()">Update order</button><button class="big" ${CB} onclick="se=null;render()">Cancel</button></div>`:'';
+ const vf=vs?`<div class="card"><b>Invoice ${invNo(vs.id)}</b><small>${vs.lines.length} item${vs.lines.length>1?'s':''}, ${R(vs.tot)}</small><label>Client name<input id="icn" value="${esc(vs.client)}"></label><label>Client contact or address<input id="icc" value="${esc(vs.contact||[ci.addr,ci.tel].filter(Boolean).join(', '))}"></label><button class="big" onclick="mkInv()">Create invoice PDF</button><button class="big" ${CB} onclick="iv=null;render()">Cancel</button></div>`:'';
  if(!l.length)return ban+'<p class="empty">No items yet. Add your first item under Stock.</p>';
  const ow=all.reduce((a,x)=>a+x.bal,0),F={a:'All',d:'To deliver',p:'Unpaid',x:'Paid'},ok={a:()=>1,d:x=>x.st=='ord',p:x=>x.bal>.005,x:x=>x.st=='del'&&x.bal<=.005};
  const rs=all.filter(ok[sf]).sort((a,b)=>b.ts-a.ts).slice(0,30);
  return ban+ef+vf+`<div class="g"><div><small>To deliver</small><b>${all.filter(x=>x.st=='ord').length}</b></div><div><small>Customers owe you</small><b>${R(ow)}</b></div></div>
  ${ra?`<div class="card"><label>Item<select id="si" onchange="$('#sp2').value=calc()[this.value].price">${l.map(i=>`<option value="${esc(i.key)}">${esc(i.name)} (${i.qty} left)</option>`).join('')}</select></label>
  <div class="row"><label>Qty<input id="sq" type="number" min="1" value="1"></label><label>Price each<input id="sp2" type="number" step="0.01" value="${l[0].price}"></label></div>
- <label>Client name<input id="sc" placeholder="Needed for orders"></label>
+ <button class="sm2" onclick="addLine()">+ Add item to order</button><div id="cart">${cartH()}</div>
+ <label>Client name<input id="sc" list="cl" placeholder="Needed for orders"><datalist id="cl">${clients().map(c=>`<option value="${esc(c.name)}">`).join('')}</datalist></label>
  <label>Payment<select id="sm"><option value="o">Order: deliver, then they pay</option><option value="c">Paid now</option></select></label>
- <button class="big" onclick="sell()">Record sale</button><button class="big" ${CB} onclick="ra=false;render()">Cancel</button></div>`:`<button class="add" onclick="ra=true;render()"><b>+</b> Record sale</button>`}
+ <button class="big" onclick="sell()">Record order</button><button class="big" ${CB} onclick="ra=false;cart=[];render()">Cancel</button></div>`:`<button class="add" onclick="ra=true;render()"><b>+</b> Record sale</button>`}
  <div class="seg">${Object.entries(F).map(([k,v])=>`<button class="${k==sf?'on':''}" onclick="sf='${k}';render()">${v}</button>`).join('')}</div>
- ${rs.map(e=>`<div class="oe"><div class="r1"><span>${e.qty} × ${esc(nm(e.item))}<small>${new Date(+e.ts).toLocaleString('en-ZA',{dateStyle:'short',timeStyle:'short'})}${e.user?' by '+esc(e.user):''}${e.client?' for '+esc(e.client):''}</small><span class="tg ${e.st=='del'?'d':'o'}">${e.st=='del'?'Delivered':'Ordered'}</span>${e.bal>.005?`<span class="tg b">Owes ${R(e.bal)}</span>`:'<span class="tg p">Paid</span>'}</span><b>${R(e.tot)}</b></div><div class="r2"><span>${e.st=='ord'?`<button class="sm2" data-i="${e.id}" onclick="markDel(this.dataset.i)">Mark delivered</button>`:''}${e.bal>.005?`<button class="sm2" data-i="${e.id}" onclick="recPay(this.dataset.i)">Record payment</button>`:''}</span><span style="white-space:nowrap"><button class="ic" data-i="${e.id}" onclick="se=this.dataset.i;iv=null;render();scrollTo(0,0)" aria-label="Edit sale">${PEN}</button><button class="ic d" data-i="${e.id}" onclick="delSale(this.dataset.i)" aria-label="Delete sale">${BIN}</button><button class="ic" data-i="${e.id}" onclick="iv=this.dataset.i;se=null;render();scrollTo(0,0)" aria-label="Invoice">${INV}</button></span></div></div>`).join('')||'<p class="empty">Nothing here.</p>'}`},
+ ${rs.map(o=>`<div class="oe"><div class="r1"><span>${o.lines.map(x=>`${x.qty} × ${esc(nm(x.item))}`).join('<br>')}<small>${new Date(+o.ts).toLocaleString('en-ZA',{dateStyle:'short',timeStyle:'short'})}${o.user?' by '+esc(o.user):''}${o.client?' for '+esc(o.client):''}</small><span class="tg ${o.st=='del'?'d':'o'}">${o.st=='del'?'Delivered':'Ordered'}</span>${o.bal>.005?`<span class="tg b">Owes ${R(o.bal)}</span>`:'<span class="tg p">Paid</span>'}</span><b>${R(o.tot)}</b></div><div class="r2"><span>${o.st=='ord'?`<button class="sm2" data-i="${o.id}" onclick="markDel(this.dataset.i)">Mark delivered</button>`:''}${o.bal>.005?`<button class="sm2" data-i="${o.id}" onclick="recPay(this.dataset.i)">Record payment</button>`:''}</span><span style="white-space:nowrap"><button class="ic" data-i="${o.id}" onclick="se=this.dataset.i;iv=null;render();scrollTo(0,0)" aria-label="Edit order">${PEN}</button><button class="ic d" data-i="${o.id}" onclick="delSale(this.dataset.i)" aria-label="Delete order">${BIN}</button><button class="ic" data-i="${o.id}" onclick="iv=this.dataset.i;se=null;render();scrollTo(0,0)" aria-label="Invoice">${INV}</button></span></div></div>`).join('')||'<p class="empty">Nothing here.</p>'}`},
 stock:it=>{const L=lists(),l=Object.values(it).sort((a,b)=>a.name.localeCompare(b.name)),ed=ie&&it[ie]||{},e=!!ed.key,tot=l.reduce((a,i)=>a+Math.max(i.qty,0),0),sold=sales().reduce((a,x)=>a+x.qty,0);
  return`<div class="g"><div><small>Units in stock</small><b>${tot}</b></div><div><small>Units sold</small><b>${sold}</b></div></div>${(ie||fa)?`<div class="card"><b>${e?'Edit item':'Add or update an item'}</b><label>Name (optional)<input id="an" value="${esc(ed.n||'')}"></label>
  <label>Item type<select id="at">${opts(L.type,ed.t)}</select></label>
@@ -126,13 +143,16 @@ stock:it=>{const L=lists(),l=Object.values(it).sort((a,b)=>a.name.localeCompare(
  <button class="big" onclick="addItem()">${e?'Update item':'Save item'}</button><button class="big" ${CB} onclick="ie=null;fa=false;render()">Cancel</button>${e?'':'<small>The same name, type, size and colour updates prices and adds to stock.</small>'}</div>`:`<button class="add" onclick="fa=true;render()"><b>+</b> Add item</button>`}
  ${l.map(i=>`<div class="li"><span>${esc(i.name)}<small class="${i.qty<=2?'low':''}">${i.qty} in stock, cost ${R(i.cost)}, sells ${R(i.price)}</small></span><span style="white-space:nowrap"><button class="ic" data-n="${esc(i.key)}" onclick="ie=this.dataset.n;render();scrollTo(0,0)" aria-label="Edit item">${PEN}</button><button class="ic d" data-n="${esc(i.key)}" onclick="delItem(this.dataset.n)" aria-label="Delete item">${BIN}</button><button class="ic" data-n="${esc(i.key)}" onclick="restock(this.dataset.n)" aria-label="Restock">${BOX}</button></span></div>`).join('')}`},
 profit:it=>{
- let rev=0,cost=0,u=0,by={};const f=fromT();
+ let rev=0,cost=0,u=0,by={};const f=fromT(),cs=costs().filter(c=>cts(c)>=f).sort((a,b)=>cts(b)-cts(a)),ct=cs.reduce((a,c)=>a+c.amt,0),L=lists(),ec=ce&&cs.find(x=>x.id==ce)||costs().find(x=>x.id==ce)||{};
  sales().filter(e=>e.st=='del'&&+(e.dts||e.ts)>=f).forEach(e=>{const r=e.qty*e.price,c=e.qty*e.cost;rev+=r;cost+=c;u+=+e.qty;by[e.item]=(by[e.item]||0)+r-c});
- const pr=rev-cost,val=Object.values(it).reduce((a,i)=>a+Math.max(i.qty,0)*i.cost,0);
- return`<div class="seg">${Object.entries(RN).map(([k,v])=>`<button class="${k==rg?'on':''}" onclick="rg='${k}';render()">${v}</button>`).join('')}</div>
- <div class="card"><small>Profit</small><div class="n ${pr<0?'neg':''}">${R(pr)}</div><small>${rev?Math.round(pr/rev*100)+'% margin':'No sales in this period'}</small></div>
- <div class="g"><div><small>Sales</small><b>${R(rev)}</b></div><div><small>Cost of goods</small><b>${R(cost)}</b></div><div><small>Units sold</small><b>${u}</b></div><div><small>Stock value at cost</small><b>${R(val)}</b></div></div>
+ const pr=rev-cost-ct,val=Object.values(it).reduce((a,i)=>a+Math.max(i.qty,0)*i.cost,0),cats=ec.cat&&!L.exp.includes(ec.cat)?[...L.exp,ec.cat]:L.exp;
+ return`<div class="seg">${Object.entries(RN).map(([k,v])=>`<button class="${k==rg?'on':''}" onclick="rg='${k}';ca=false;ce=null;render()">${v}</button>`).join('')}</div>
+ <div class="card"><small>Net profit (after costs)</small><div class="n ${pr<0?'neg':''}">${R(pr)}</div><small>${rev?Math.round(pr/rev*100)+'% margin':'No sales in this period'}</small></div>
+ <div class="g"><div><small>Sales</small><b>${R(rev)}</b></div><div><small>Cost of goods</small><b>${R(cost)}</b></div><div><small>Other costs</small><b>${R(ct)}</b></div><div><small>Units sold</small><b>${u}</b></div><div><small>Stock value at cost</small><b>${R(val)}</b></div></div>
  <div class="ex"><button class="sm" onclick="xls()">Export Excel</button><button class="sm" onclick="pdf()">Export PDF</button></div>
+ <h3>Costs (courier, packaging, transport)</h3>
+ ${(ca||ce)?`<div class="card" id="cf"><b>${ce?'Edit cost':'Add a cost'}</b><label>Category<select id="cc">${cats.map(x=>`<option${x==ec.cat?' selected':''}>${esc(x)}</option>`).join('')}</select></label><div class="row"><label>Amount<input id="cm" type="number" step="0.01" value="${ec.amt||''}"></label><label>Date<input id="cd" type="date" value="${ec.d||td()}"></label></div><label>Note (optional)<input id="cn2" value="${esc(ec.note||'')}"></label><button class="big" onclick="saveCost()">${ce?'Update':'Save'}</button><button class="big" ${CB} onclick="ca=false;ce=null;render()">Cancel</button></div>`:`<button class="add" onclick="ca=true;render()"><b>+</b> Add a cost</button>`}
+ ${cs.map(c=>`<div class="li"><span>${esc(c.cat)}<small>${esc(c.note||'')}${c.note?', ':''}${c.d||''}</small></span><span style="white-space:nowrap"><b>${R(c.amt)}</b><button class="ic" data-i="${c.id}" onclick="ce=this.dataset.i;render();$('#cf')&&$('#cf').scrollIntoView()" aria-label="Edit cost">${PEN}</button><button class="ic d" data-i="${c.id}" onclick="delCost(this.dataset.i)" aria-label="Delete cost">${BIN}</button></span></div>`).join('')||'<p class="empty">No costs in this period.</p>'}
  <h3>Profit by item</h3>${Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="li"><span>${esc((it[k]||{}).name||k)}</span><b>${R(v)}</b></div>`).join('')||'<p class="empty">Nothing to show yet.</p>'}`},
 owed:()=>{const L=lists(),o=open().sort((a,b)=>(a.due||'9')<(b.due||'9')?-1:1),tot=o.reduce((a,x)=>a+x.amt-x.paid,0),t=td(),w=soon().map(x=>x.id),ed=oe&&owed().find(x=>x.id==oe)||{},cats=ed.cat&&!L.cat.includes(ed.cat)?[...L.cat,ed.cat]:L.cat;
  return`<div class="card"><small>Total you owe</small><div class="n">${R(tot)}</div></div>
@@ -140,37 +160,66 @@ owed:()=>{const L=lists(),o=open().sort((a,b)=>(a.due||'9')<(b.due||'9')?-1:1),t
  <div class="row"><label>Category<select id="oc">${cats.map(x=>`<option${x==ed.cat?' selected':''}>${esc(x)}</option>`).join('')}</select></label><label>Amount<input id="oa" type="number" step="0.01" value="${ed.amt||''}"></label></div>
  <label>Due date<input id="od" type="date" value="${ed.due||''}"></label><button class="big" onclick="addOwe()">${ed.id?'Update':'Save'}</button><button class="big" ${CB} onclick="oe=null;oa=false;render()">Cancel</button></div>`:`<button class="add" onclick="oa=true;render()"><b>+</b> Add something you owe</button>`}
  ${o.map(x=>`<div class="oe"><div class="r1"><span>${esc(x.party)}<small>${esc(x.cat||'')}${x.due?', due '+x.due:''}${x.paid?', paid '+R(x.paid):''}</small>${x.due&&x.due<t?'<small class="low">Overdue</small>':w.includes(x.id)?'<small class="low">Due within 7 days</small>':''}</span><b>${R(x.amt-x.paid)}</b></div><div class="r2"><button data-i="${x.id}" onclick="pay(this.dataset.i)">Pay</button><span><button class="ic" data-i="${x.id}" onclick="oe=this.dataset.i;render();scrollTo(0,0)" aria-label="Edit">${PEN}</button><button class="ic d" data-i="${x.id}" onclick="delOwe(this.dataset.i)" aria-label="Delete">${BIN}</button></span></div></div>`).join('')||'<p class="empty">Nothing owed right now.</p>'}`},
+clients:()=>{const cl=clients().sort((a,b)=>a.name.localeCompare(b.name)),os=orders(),ed=ke&&cl.find(x=>x.id==ke);
+ const st=n=>{const m=os.filter(o=>o.client.toLowerCase()==n.toLowerCase());return{n:m.length,owes:m.reduce((a,o)=>a+o.bal,0)}};
+ return(ke||ka?`<div class="card"><b>${ed?'Edit client':'Add a client'}</b><label>Name<input id="cn" value="${esc(ed?ed.name:'')}"${ed?' readonly':''}></label><label>WhatsApp number<input id="ct" type="tel" value="${esc(ed&&ed.tel||'')}" placeholder="e.g. 082 123 4567"></label><label>Address (optional)<input id="cad" value="${esc(ed&&ed.addr||'')}"></label><button class="big" onclick="saveClient()">${ed?'Update':'Save'}</button><button class="big" ${CB} onclick="ke=null;ka=false;render()">Cancel</button></div>`:`<button class="add" onclick="ka=true;render()"><b>+</b> Add client</button>`)+
+ (cl.map(c=>{const s=st(c.name);return`<div class="oe"><div class="r1"><span>${esc(c.name)}<small>${esc(c.tel||'No number saved')}${c.addr?', '+esc(c.addr):''}</small><span class="tg d">${s.n} order${s.n==1?'':'s'}</span>${s.owes>.005?`<span class="tg b">Owes ${R(s.owes)}</span>`:''}</span></div><div class="r2" style="justify-content:flex-end"><button class="ic" data-i="${c.id}" onclick="ke=this.dataset.i;render();scrollTo(0,0)" aria-label="Edit client">${PEN}</button><button class="ic d" data-i="${c.id}" onclick="delClient(this.dataset.i)" aria-label="Delete client">${BIN}</button>${c.tel?`<button class="ic" data-i="${c.id}" onclick="remind(this.dataset.i)" aria-label="WhatsApp">${WA}</button>`:''}</div></div>`}).join('')||'<p class="empty">No clients yet. They are added automatically when you record an order, or add one here.</p>')},
 setup:()=>{const L=lists();return(S.user&&!sc?`<button onclick="sc=true;render()">Change name or connection</button>`:`<div class="card"><label>Your name<input id="un" value="${esc(S.user)}" placeholder="Shows next to each sale you record"></label>
  <label>Google Sheet link (web app URL)<input id="ur" value="${esc(S.url)}" placeholder="https://script.google.com/macros/s/…/exec"></label>
  
  <button class="big" onclick="cfg()">Save and sync</button></div>`)+`<div class="card"><label>Appearance<select onchange="S.th=this.value;save();render()"><option value="">Match my device</option><option value="light"${S.th=='light'?' selected':''}>Light</option><option value="dark"${S.th=='dark'?' selected':''}>Dark</option></select></label></div>
- <div class="card"><b>Lists and invoice details</b><small>One entry per line. Changes sync to every device. Invoice details (address, contact, bank details) print at the top of every invoice.</small>${Object.keys(DL).map(k=>`<label>${LN[k]}<textarea id="l_${k}" rows="4">${esc(L[k].join('\n'))}</textarea></label>`).join('')}<button class="big" onclick="saveLists()">Save lists</button></div>
+ <div class="card"><b>Lists and invoice details</b><small>One entry per line. Changes sync to every device. Invoice details print at the top of every invoice, banking details underneath the items.</small>${Object.keys(DL).map(k=>`<label>${LN[k]}<textarea id="l_${k}" rows="4">${esc(L[k].join('\n'))}</textarea></label>`).join('')}<button class="big" onclick="saveLists()">Save lists</button></div>
  <p class="empty">Leave the link empty to use the app on this device only.</p><p class="empty">ZD&amp;LD Trading app by Last Dulani</p>`}};
 
-function sell(){const it=calc()[$('#si').value],q=+$('#sq').value,p=+$('#sp2').value,c=$('#sc').value.trim(),ord=$('#sm').value=='o';
+function cartH(){const A=calc();return cart.map((x,i)=>`<div class="li"><span>${x.q} × ${esc((A[x.k]||{}).name||x.k)}<small>${R(x.q*x.p)}</small></span><button class="ic d" onclick="cart.splice(${i},1);drawCart()" aria-label="Remove">${BIN}</button></div>`).join('')}
+const drawCart=()=>{$('#cart').innerHTML=cartH()};
+function addLine(){const it=calc()[$('#si').value],q=+$('#sq').value,p=+$('#sp2').value;
  if(!(q>0)||!(p>=0))return toast('Enter a quantity and price');
- if(q>it.qty)return toast('Only '+it.qty+' in stock');
+ const used=cart.filter(x=>x.k==it.key).reduce((a,x)=>a+x.q,0);
+ if(q+used>it.qty)return toast('Only '+(it.qty-used)+' left in stock');
+ cart.push({k:it.key,q,p});$('#sq').value='';drawCart()}
+function sell(){const L=[...cart],q=+$('#sq').value,A=calc();
+ if(q>0){const it=A[$('#si').value],p=+$('#sp2').value,used=L.filter(x=>x.k==it.key).reduce((a,x)=>a+x.q,0);
+  if(!(p>=0))return toast('Enter a price');if(q+used>it.qty)return toast('Only '+(it.qty-used)+' left in stock');L.push({k:it.key,q,p})}
+ if(!L.length)return toast('Add at least one item');
+ const c=$('#sc').value.trim(),ord=$('#sm').value=='o';
  if(ord&&!c)return toast('Enter the client name for an order');
- ra=false;add('sale',it.key,q,it.cost,p,JSON.stringify(ord?{client:c,st:'ord'}:{client:c,st:'del',pf:1}));toast(ord?'Order recorded':'Sale recorded')}
-function markDel(i){const s=sales().find(x=>x.id==i);add('sedit',i,s.qty,'',s.price,JSON.stringify({st:'del'}));toast('Marked delivered')}
-function recPay(i){const s=sales().find(x=>x.id==i),a=+prompt('Amount received'+(s.client?' from '+s.client:'')+'?',s.bal.toFixed(2));
- if(!(a>0))return;if(a>s.bal+.005)return toast('That is more than the balance');add('spay',i,'','',a);toast('Payment recorded')}
+ const m=ord?{client:c,st:'ord'}:{client:c,st:'del',pf:1};let oid;cart=[];ra=false;
+ bat(()=>{if(c&&!clients().some(x=>x.name.toLowerCase()==c.toLowerCase()))mk('cl',c,'','','','{}');
+  L.forEach(x=>{const e=mk('sale',x.k,x.q,A[x.k].cost,x.p,JSON.stringify(oid?{...m,oid}:m));if(!oid)oid=e.id})});
+ toast(ord?'Order recorded':'Sale recorded')}
+function markDel(i){const o=orders().find(x=>x.id==i);bat(()=>o.lines.forEach(l=>mk('sedit',l.id,l.qty,'',l.price,JSON.stringify({st:'del'}))));toast('Marked delivered')}
+function recPay(i){const o=orders().find(x=>x.id==i),a=+prompt('Amount received'+(o.client?' from '+o.client:'')+'?',o.bal.toFixed(2));
+ if(!(a>0))return;if(a>o.bal+.005)return toast('That is more than the balance');add('spay',i,'','',a);toast('Payment recorded')}
 function addItem(){const n=$('#an').value.trim(),t=$('#at').value,s=$('#as').value,c=$('#ak').value,co=+$('#ac').value,p=+$('#ap').value,q=+$('#aq').value||0;
  if(!(n||t)||!(p>0)||!(co>=0))return toast('Enter a name or type, a cost and a selling price');
  const m=JSON.stringify({n,t,s,c});fa=false;
  if(ie){const k=ie,cur=calc()[k].qty;ie=null;add('iedit',k,'',co,p,m);if(q!=cur)add('restock',k,q-cur,'','');toast('Item updated')}
  else{add('item',lab({n,t,s,c}),q,co,p,m);toast('Item saved')}}
 function delItem(k){const i=calc()[k];if(confirm('Delete '+i.name+'? Past sales are kept.')){if(ie==k)ie=null;add('idel',k,'','','');toast('Item deleted')}}
-function saveSale(){const s=sales().find(x=>x.id==se),it=calc()[s.item],q=+$('#eq').value,p=+$('#ep').value;
- if(!(q>0)||!(p>=0))return toast('Enter a quantity and price');
- if(it&&q>it.qty+s.qty)return toast('Only '+(it.qty+s.qty)+' available');
- se=null;add('sedit',s.id,q,'',p,JSON.stringify({client:$('#ecn').value.trim()}));toast('Sale updated')}
-function delSale(i){if(confirm('Delete this sale? The stock goes back.')){if(se==i)se=null;if(iv==i)iv=null;add('sdel',i,'','','');toast('Sale deleted')}}
-function invNo(id){const a=S.ev.filter(e=>e.kind=='sale').sort((x,y)=>x.ts-y.ts);return 'INV-'+String(a.findIndex(e=>e.id==id)+1).padStart(4,'0')}
+function saveSale(){const o=orders().find(x=>x.id==se),A=calc(),c=$('#ecn').value.trim(),v=[];
+ for(let i=0;i<o.lines.length;i++){const l=o.lines[i],q=+$('#q'+i).value,p=+$('#p'+i).value,it=A[l.item];
+  if(!(q>0)||!(p>=0))return toast('Enter a quantity and price for every item');
+  if(it&&q>it.qty+l.qty)return toast('Only '+(it.qty+l.qty)+' available');v.push([l,q,p])}
+ se=null;bat(()=>v.forEach(([l,q,p])=>mk('sedit',l.id,q,'',p,JSON.stringify({client:c}))));toast('Order updated')}
+function delSale(i){const o=orders().find(x=>x.id==i);if(confirm('Delete this order? The stock goes back.')){if(se==i)se=null;if(iv==i)iv=null;bat(()=>o.lines.forEach(l=>mk('sdel',l.id,'','','')));toast('Order deleted')}}
+function saveCost(){const a=+$('#cm').value;if(!(a>0))return toast('Enter the amount');
+ const m=JSON.stringify({cat:$('#cc').value,note:$('#cn2').value.trim(),d:$('#cd').value||td()});
+ if(ce){const i=ce;ce=null;add('cedit',i,'',a,'',m)}else{ca=false;add('cost',$('#cc').value,'',a,'',m)}toast('Saved')}
+function delCost(i){if(confirm('Delete this cost?')){if(ce==i)ce=null;add('cdel',i,'','','');toast('Deleted')}}
+function saveClient(){const n=$('#cn').value.trim(),m=JSON.stringify({tel:$('#ct').value.trim(),addr:$('#cad').value.trim()});
+ if(!n)return toast('Enter the client name');
+ if(ke){const i=ke;ke=null;add('cle',i,'','','',m)}
+ else{if(clients().some(x=>x.name.toLowerCase()==n.toLowerCase()))return toast('That client already exists');ka=false;add('cl',n,'','','',m)}toast('Saved')}
+function delClient(i){if(confirm('Delete this client? Their orders are kept.')){if(ke==i)ke=null;add('cld',i,'','','');toast('Deleted')}}
+function remind(i){const c=clients().find(x=>x.id==i),ow=orders().filter(x=>x.client.toLowerCase()==c.name.toLowerCase()).reduce((a,x)=>a+x.bal,0),B=lists().bank.filter(Boolean);
+ const t='Hi '+c.name+(ow>.005?', this is a friendly reminder from ZD and LD Trading that '+R(ow)+' is still outstanding on your order.'+(B.length?'\n\nBanking details:\n'+B.join('\n'):'')+'\n\nThank you!':'');
+ window.open('https://wa.me/'+waNum(c.tel)+'?text='+encodeURIComponent(t),'_blank')}
+function invNo(id){const a=[];S.ev.filter(e=>e.kind=='sale').sort((x,y)=>x.ts-y.ts).forEach(e=>{const k=jp(e.meta).oid||e.id;if(!a.includes(k))a.push(k)});return 'INV-'+String(a.indexOf(id)+1).padStart(4,'0')}
 function mkInv(){try{mkInv0()}catch(e){toast('Invoice error: '+e.message)}}
-function mkInv0(){const s=sales().find(x=>x.id==iv),it=calc()[s.item]||{},c=$('#icn').value.trim(),ct=$('#icc').value.trim(),no=invNo(s.id);
- const u=invPdf({no,date:new Date(+s.ts).toLocaleDateString('en-ZA'),client:c,contact:ct,inv:lists().inv.filter(Boolean),item:(it.name||s.item).slice(0,48),qty:String(s.qty),price:R(s.price),total:R(s.qty*s.price),paid:R(s.pf?s.tot:s.paid),bal:R(s.bal)},LG);
- add('sedit',s.id,s.qty,'',s.price,JSON.stringify({client:c,contact:ct}));iv=null;render();
+function mkInv0(){const o=orders().find(x=>x.id==iv),A=calc(),c=$('#icn').value.trim(),ct=$('#icc').value.trim(),no=invNo(o.id),L=lists();
+ const u=invPdf({no,date:new Date(+o.ts).toLocaleDateString('en-ZA'),client:c,contact:ct,inv:L.inv.filter(Boolean),bank:L.bank.filter(Boolean),lines:o.lines.map(l=>[((A[l.item]||{}).name||l.item).slice(0,44),String(l.qty),R(l.price),R(l.tot)]),total:R(o.tot),paid:R(o.pf?o.tot:o.paid),bal:R(o.bal)},LG);
+ bat(()=>o.lines.forEach(l=>mk('sedit',l.id,l.qty,'',l.price,JSON.stringify({client:c,contact:ct}))));iv=null;render();
  outPdf(u,(no+(c?' '+c:'')).replace(/[^\w .-]/g,'')+'.pdf')}
 function restock(n){const i=calc()[n],q=+prompt('How many '+i.name+' came in?');if(q>0){add('restock',n,q,'','');toast('Stock updated')}}
 function addOwe(){const p=$('#op').value.trim(),a=+$('#oa').value,m=JSON.stringify({cat:$('#oc').value,due:$('#od').value});
@@ -191,14 +240,15 @@ function data(){const it=calc(),f=fromT(),sa=sales().filter(e=>+(e.dts||e.ts)>=f
  return{
  sales:[['Date','By','Item','Type','Size','Colour','Qty','Price each','Cost each','Profit','Client','Status','Paid','Balance'],...sa.map(e=>{const i=it[e.item]||{};return[new Date(+e.ts).toLocaleDateString('en-ZA'),e.user||'',i.n||i.name||e.item,i.t||'',i.s||'',i.c||'',+e.qty,+e.price,+e.cost,(e.price-e.cost)*e.qty,e.client||'',e.st=='del'?'Delivered':'Ordered',e.pf?e.tot:e.paid,e.bal]})],
  stock:[['Item','Type','Size','Colour','In stock','Cost','Price'],...Object.values(it).map(i=>[i.n||i.name,i.t||'',i.s||'',i.c||'',i.qty,i.cost,i.price])],
- ow:[['Owed to','Category','Amount','Paid','Outstanding','Due'],...owed().map(o=>[o.party,o.cat||'',o.amt,o.paid,o.amt-o.paid,o.due||''])]}}
+ ow:[['Owed to','Category','Amount','Paid','Outstanding','Due'],...owed().map(o=>[o.party,o.cat||'',o.amt,o.paid,o.amt-o.paid,o.due||''])],
+ co:[['Date','Category','Note','Amount'],...costs().filter(c=>cts(c)>=f).sort((a,b)=>cts(a)-cts(b)).map(c=>[c.d||'',c.cat,c.note||'',c.amt])]}}
 function xls(){const d=data(),c=v=>typeof v=='number'?`<Cell><Data ss:Type="Number">${v}</Data></Cell>`:`<Cell><Data ss:Type="String">${esc(v)}</Data></Cell>`,
  w=(n,r)=>`<Worksheet ss:Name="${n}"><Table>${r.map(x=>`<Row>${x.map(c).join('')}</Row>`).join('')}</Table></Worksheet>`,
- b=new Blob([`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">${w('Sales',d.sales)+w('Stock',d.stock)+w('Owed',d.ow)}</Workbook>`],{type:'application/vnd.ms-excel'}),
+ b=new Blob([`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">${w('Sales',d.sales)+w('Stock',d.stock)+w('Owed',d.ow)+w('Costs',d.co)}</Workbook>`],{type:'application/vnd.ms-excel'}),
  a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='ZDLD-report.xls';a.click()}
 function pdf(){const d=data(),t=r=>`<table>${r.map((x,i)=>`<tr>${x.map(c=>i?`<td>${esc(typeof c=='number'&&!Number.isInteger(c)?c.toFixed(2):c)}</td>`:`<th>${esc(c)}</th>`).join('')}</tr>`).join('')}</table>`,
- s=d.sales.slice(1).filter(r=>r[11]=='Delivered'),rev=s.reduce((a,r)=>a+r[6]*r[7],0),pr=s.reduce((a,r)=>a+r[9],0);
- $('#rep').innerHTML=`<h2>ZD&amp;LD Trading report</h2><p>${RN[rg]}, printed ${new Date().toLocaleDateString('en-ZA')}. Sales ${R(rev)}, profit ${R(pr)}.</p><h3>Sales</h3>${t(d.sales)}<h3>Stock</h3>${t(d.stock)}<h3>Money owed</h3>${t(d.ow)}`;print()}
+ s=d.sales.slice(1).filter(r=>r[11]=='Delivered'),rev=s.reduce((a,r)=>a+r[6]*r[7],0),pr=s.reduce((a,r)=>a+r[9],0)-d.co.slice(1).reduce((a,r)=>a+r[3],0);
+ $('#rep').innerHTML=`<h2>ZD&amp;LD Trading report</h2><p>${RN[rg]}, printed ${new Date().toLocaleDateString('en-ZA')}. Sales ${R(rev)}, profit ${R(pr)}.</p><h3>Sales</h3>${t(d.sales)}<h3>Stock</h3>${t(d.stock)}<h3>Costs</h3>${t(d.co)}<h3>Money owed</h3>${t(d.ow)}`;print()}
 
 /*PDF*/
 const T=(s,x,y,z,b)=>`BT /F${b?2:1} ${z} Tf ${x} ${y} Td (${String(s).replace(/[\u00a0\u202f]/g,' ').replace(/[^\x20-\x7e\xa0-\xff]/g,'?').replace(/[\\()]/g,'\\$&')}) Tj ET\n`,Ln=(y,a=40,b=555)=>`0.5 w ${a} ${y} m ${b} ${y} l S\n`;
@@ -215,8 +265,9 @@ function invPdf(d,img){let c=img?'q 70 0 0 70 40 752 cm /Im1 Do Q\n':'',y=800;
  y-=48;c+=T('Bill to',40,y,10,1);y-=14;c+=T(d.client||'-',40,y,11);
  d.contact.split('\n').forEach(l=>{if(l.trim()){y-=13;c+=T(l,40,y,10)}});
  y-=34;c+=T('Item',40,y,10,1)+T('Qty',340,y,10,1)+T('Price each',400,y,10,1)+T('Total',490,y,10,1)+Ln(y-6);
- y-=22;c+=T(d.item,40,y,10)+T(d.qty,340,y,10)+T(d.price,400,y,10)+T(d.total,490,y,10)+Ln(y-8);
+ d.lines.forEach(r=>{y-=20;c+=T(r[0],40,y,10)+T(r[1],340,y,10)+T(r[2],400,y,10)+T(r[3],490,y,10)});c+=Ln(y-8);
  y-=30;c+=T('Total: '+d.total,370,y,11);y-=16;c+=T('Paid: '+d.paid,370,y,11);y-=20;c+=T('Balance due: '+d.bal,370,y,13,1);
+ if(d.bank.length){y-=40;c+=T('Banking details',40,y,10,1);d.bank.forEach(l=>{y-=14;c+=T(l,40,y,10)})}
  return pdfDoc(c,img)}
 async function outPdf(u,name){try{const f=new File([u],name,{type:'application/pdf'});
  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:name});return}catch(e){if(e.name=='AbortError')return;toast('Share failed ('+e.name+'), trying another way')}}
